@@ -1,6 +1,8 @@
-import 'package:campus_connect/src/view/bottom_nav.dart';
+import 'package:campus_connect/src/view/login_page.dart';
+import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -17,13 +19,6 @@ class _SettingsPageState extends State<SettingsPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          onPressed: () {
-            Get.offAll(() => BottomNavPage(initialIndex: 0));
-          },
-          icon: Icon(Icons.arrow_back_ios_new_outlined),
-          color: Color(0xffFFFFFF),
-        ),
         centerTitle: true,
         title: Text(
           'Settings',
@@ -50,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             //profile and name
             Padding(
-              padding: EdgeInsets.only(left: 30.sp),
+              padding: EdgeInsets.only(left: 40.sp),
               child: SizedBox(
                 height: 100.h,
                 child: Row(
@@ -87,13 +82,119 @@ class _SettingsPageState extends State<SettingsPage> {
 
             Divider(
               color: Color(0xff8E8E93),
-              thickness: .5,
+              thickness: .5.sp,
             ),
 
             //settings components
-            SizedBox(
-              child: Column(
-                children: [],
+            Padding(
+              padding: EdgeInsets.only(left: 30.sp, top: 40.sp),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    //account
+                    GestureDetector(
+                      onTap: () => Get.to(() => ProfilePage()),
+                      child: SizedBox(
+                        width: 300.w,
+                        height: 50.w,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/account.svg',
+                            ),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Account',
+                              style: TextStyle(
+                                  color: Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    //notification
+                    GestureDetector(
+                      onTap: () => Get.to(() => ProfilePage()),
+                      child: SizedBox(
+                        width: 300.w,
+                        height: 50.w,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/notification.svg',
+                            ),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Notification',
+                              style: TextStyle(
+                                  color: Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    //settings
+                    GestureDetector(
+                      onTap: () => Get.to(() => ProfilePage()),
+                      child: SizedBox(
+                        width: 300.w,
+                        height: 50.w,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/settings.svg',
+                            ),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Settings',
+                              style: TextStyle(
+                                  color: Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    //logout
+                    GestureDetector(
+                      onTap: () {
+                        Get.off(() => LoginPage());
+                      },
+                      child: SizedBox(
+                        width: 300.w,
+                        height: 50.w,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/logout.svg',
+                            ),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Logout',
+                              style: TextStyle(
+                                  color: Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
+                ),
               ),
             )
           ],
