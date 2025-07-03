@@ -1,6 +1,6 @@
 # campus_connect
 
-A new Flutter project.
+Campus Connect is our 7th semester final year project which is an mobile application that helps students to never miss any important college notices about exams, class schedules and other important information.
 
 ## Getting Started
 
