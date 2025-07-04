@@ -11,7 +11,7 @@ class BottomNavPage extends StatefulWidget {
   const BottomNavPage({super.key, required this.initialIndex});
 
   @override
-  _BottomNavPageState createState() => _BottomNavPageState();
+  State<BottomNavPage> createState() => _BottomNavPageState();
 }
 
 class _BottomNavPageState extends State<BottomNavPage> {

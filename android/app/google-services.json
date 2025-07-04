@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1042376262357",
+    "project_id": "campus-connect-16ec5",
+    "storage_bucket": "campus-connect-16ec5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042376262357:android:57261794dce6db0a23185c",
+        "android_client_info": {
+          "package_name": "com.example.campus_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2sxn2k5pU5R9G5naL4bWh-bqMxCBqXKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
