@@ -87,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
             //settings components
             Padding(
-              padding: EdgeInsets.only(left: 30.sp, top: 40.sp),
+              padding: EdgeInsets.only(top: 40.sp),
               child: SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -177,14 +177,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         height: 50.w,
                         child: Row(
                           children: [
-                            SvgPicture.asset(
-                              'assets/logout.svg',
-                            ),
+                            SvgPicture.asset('assets/logout.svg',
+                                colorFilter: ColorFilter.mode(
+                                    Color(0xffD73800), BlendMode.srcIn)),
                             SizedBox(width: 20.w),
                             Text(
                               'Logout',
                               style: TextStyle(
-                                  color: Color(0xffFFFFFF),
+                                  color: Color(0xffD73800),
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w500),
                             )

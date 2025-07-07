@@ -1,11 +1,35 @@
 import 'package:campus_connect/src/view/bottom_nav.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  //text controller
+  final _emailController = TextEditingController();
+
+  final _passwordController = TextEditingController();
+
+  Future signIn() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim());
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +93,7 @@ class LoginPage extends StatelessWidget {
 
                           //email
                           TextFormField(
+                            controller: _emailController,
                             cursorColor: Color(0xffFFFFFF),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -98,6 +123,7 @@ class LoginPage extends StatelessWidget {
 
                           //password
                           TextFormField(
+                            controller: _passwordController,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             validator: (value) {
@@ -150,7 +176,7 @@ class LoginPage extends StatelessWidget {
                           //login button
                           SizedBox(
                               width: 260.w,
-                              height: 40.h,
+                              height: 50.h,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xff193670),

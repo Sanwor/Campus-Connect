@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(Duration(milliseconds: 2000), () {
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => const LoginPage(),
+        builder: (_) => LoginPage(),
       ));
     });
   }
