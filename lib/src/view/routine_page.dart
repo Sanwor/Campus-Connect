@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/model/class_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -25,7 +26,7 @@ class _RoutinePageState extends State<RoutinePage> {
         ),
       ),
       body: Container(
-          padding: EdgeInsets.only(top: 120.sp),
+          padding: EdgeInsets.only(top: 50.sp),
           height: MediaQuery.of(context).size.height,
           width: double.infinity,
           decoration: BoxDecoration(
@@ -37,7 +38,60 @@ class _RoutinePageState extends State<RoutinePage> {
                   Color(0xff204486),
                 ]),
           ),
-          child: Column()),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 20.h,
+                      ),
+                      itemCount: classDays.length,
+                      itemBuilder: (context, index) {
+                        String day = classDays[index];
+                        List<Map<String, String>> daySchedule = schedule[day]!;
+
+                        return ExpansionTile(
+                          title: Text(
+                            day,
+                            style: TextStyle(color: Color(0xffFFFFFF)),
+                          ),
+                          children: [
+                            Table(
+                              columnWidths: {
+                                0: FlexColumnWidth(2.w),
+                                1: FlexColumnWidth(3.w),
+                              },
+                              border: TableBorder.all(color: Color(0xffFFFFFF)),
+                              children: daySchedule.map((entry) {
+                                return TableRow(children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.sp),
+                                    child: Text(
+                                      entry['time']!,
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          TextStyle(color: Color(0xffFFFFFF)),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.sp),
+                                    child: Text(entry['subject']!,
+                                        style:
+                                            TextStyle(color: Color(0xffFFFFFF)),
+                                        textAlign: TextAlign.center),
+                                  ),
+                                ]);
+                              }).toList(),
+                            ),
+                          ],
+                        );
+                      },
+                    )),
+              ],
+            ),
+          )),
     );
   }
 }

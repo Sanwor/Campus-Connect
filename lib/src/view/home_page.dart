@@ -1,4 +1,6 @@
+import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final user = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +40,22 @@ class _HomePageState extends State<HomePage> {
               ))
         ],
       ),
+
+      //chat bot
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true, // Full screen height if needed
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (context) => ChatBottomSheet(),
+          );
+        },
+        child: Icon(Icons.chat),
+      ),
+
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,

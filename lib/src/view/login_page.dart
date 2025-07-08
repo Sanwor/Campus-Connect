@@ -13,15 +13,21 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   //text controller
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
 
   Future signIn() async {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
+
+    Get.off(() => BottomNavPage(initialIndex: 0));
+    Get.snackbar('User verified!', 'logged in successfully',
+        animationDuration: Duration(milliseconds: 500),
+        colorText: Color(0xffFFFFFF));
   }
 
   @override
@@ -72,157 +78,168 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 20),
 
                   //login container
-                  SizedBox(
-                    height: 470.h,
-                    width: 300.w,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          left: 20.sp, right: 20.sp, top: 10.sp),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 32.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xffFFFFFF),
-                            ),
-                          ),
-
-                          SizedBox(height: 30.h),
-
-                          //email
-                          TextFormField(
-                            controller: _emailController,
-                            cursorColor: Color(0xffFFFFFF),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "This is a required field";
-                              }
-
-                              if (value.length > 255) {
-                                return "Only 3 Characters can be Entered";
-                              }
-                              return null;
-                            },
-                            style: TextStyle(color: Color(0xffFFFFFF)),
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                                hintText: 'Enter you email',
-                                labelText: 'Email address',
-                                labelStyle: TextStyle(
-                                  color: Color(0xffFFFFFF),
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w500,
-                                )),
-                          ),
-
-                          SizedBox(height: 10.h),
-
-                          //password
-                          TextFormField(
-                            controller: _passwordController,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "The password can't be empty";
-                              }
-                              if (value.length < 8) {
-                                return "Password must be greater than 8 characters";
-                              }
-                              return null;
-                            },
-                            obscureText: true,
-                            keyboardType: TextInputType.visiblePassword,
-                            decoration: InputDecoration(
-                                hintText: 'Enter your password',
-                                labelText: 'Password',
-                                labelStyle: TextStyle(
-                                  color: Color(0xffFFFFFF),
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w500,
-                                )),
-                          ),
-
-                          SizedBox(height: 10.sp),
-
-                          //forgot password
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                    fontSize: 12.sp, color: Color(0xffFFFFFF)),
+                  Form(
+                    key: formKey,
+                    child: SizedBox(
+                      height: 360.h,
+                      width: 300.w,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            left: 20.sp, right: 20.sp, top: 10.sp),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xffFFFFFF),
                               ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Text(
-                                  ' Reset',
+                            ),
+
+                            SizedBox(height: 30.h),
+
+                            //email
+                            TextFormField(
+                              controller: _emailController,
+                              cursorColor: Color(0xffFFFFFF),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "This is a required field";
+                                }
+
+                                if (value.length > 255) {
+                                  return "Only 3 Characters can be Entered";
+                                }
+                                return null;
+                              },
+                              style: TextStyle(color: Color(0xffFFFFFF)),
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                  hintText: 'Enter you email',
+                                  labelText: 'Email address',
+                                  labelStyle: TextStyle(
+                                    color: Color(0xffFFFFFF),
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+
+                            SizedBox(height: 10.h),
+
+                            //password
+                            TextFormField(
+                              controller: _passwordController,
+                              cursorColor: Color(0xffFFFFFF),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "The password can't be empty";
+                                }
+                                if (value.length < 8) {
+                                  return "Password must be greater than 8 characters";
+                                }
+                                return null;
+                              },
+                              style: TextStyle(color: Color(0xffFFFFFF)),
+                              obscureText: true,
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: InputDecoration(
+                                  hintText: 'Enter your password',
+                                  labelText: 'Password',
+                                  labelStyle: TextStyle(
+                                    color: Color(0xffFFFFFF),
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+
+                            SizedBox(height: 10.sp),
+
+                            //forgot password
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Forgot Password?',
                                   style: TextStyle(
                                       fontSize: 12.sp,
-                                      color: Color(0xffFFFFFF),
-                                      fontWeight: FontWeight.w600),
+                                      color: Color(0xffFFFFFF)),
                                 ),
-                              )
-                            ],
-                          ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Text(
+                                    ' Reset',
+                                    style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Color(0xffFFFFFF),
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                )
+                              ],
+                            ),
 
-                          SizedBox(height: 30.h),
+                            SizedBox(height: 30.h),
 
-                          //login button
-                          SizedBox(
-                              width: 260.w,
-                              height: 50.h,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xff193670),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    side: BorderSide(
-                                      color: Colors.white, // 👈 white border
-                                      width: 2, // optional: border width
+                            //login button
+                            SizedBox(
+                                width: 260.w,
+                                height: 50.h,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff193670),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      side: BorderSide(
+                                        color: Colors.white, // 👈 white border
+                                        width: 2, // optional: border width
+                                      ),
                                     ),
                                   ),
-                                ),
-                                onPressed: () {
-                                  Get.off(() => BottomNavPage(initialIndex: 0));
-                                },
-                                child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                      color: Color(0xffFFFFFF),
-                                      fontSize: 16.sp),
-                                ),
-                              )),
-
-                          SizedBox(height: 20.h),
-
-                          Text(
-                            'or Continue with:',
-                            style: TextStyle(
-                                color: Color(0xffFFFFFF),
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w400),
-                          ),
-
-                          SizedBox(height: 20.h),
-
-                          //google login
-                          IconButton(
-                              onPressed: () {},
-                              icon: SvgPicture.asset(
-                                'assets/loginGoogle.svg',
-                                height: 50.h,
-                                width: 50.w,
-                              ))
-                        ],
+                                  onPressed: () async {
+                                    var isValid =
+                                        formKey.currentState!.validate();
+                                    if (isValid == false) {
+                                      return;
+                                    } else {
+                                      signIn();
+                                    }
+                                  },
+                                  child: Text(
+                                    'Login',
+                                    style: TextStyle(
+                                        color: Color(0xffFFFFFF),
+                                        fontSize: 16.sp),
+                                  ),
+                                )),
+                          ],
+                        ),
                       ),
                     ),
-                  )
+                  ),
+                  SizedBox(height: 20.h),
+
+                  Text(
+                    'or Continue with:',
+                    style: TextStyle(
+                        color: Color(0xffFFFFFF),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  //google login
+                  IconButton(
+                      onPressed: () {},
+                      icon: SvgPicture.asset(
+                        'assets/loginGoogle.svg',
+                        height: 50.h,
+                        width: 50.w,
+                      ))
                 ],
               ),
             ),
