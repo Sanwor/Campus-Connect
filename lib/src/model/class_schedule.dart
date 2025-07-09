@@ -52,3 +52,17 @@ final Map<String, List<Map<String, String>>> schedule = {
   "Thursday": thursday,
   "Friday": friday,
 };
+
+String getTodayName() {
+  final today = DateTime.now().weekday;
+  const days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  return days[today - 1];
+}

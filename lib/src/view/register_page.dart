@@ -1,46 +1,68 @@
 import 'package:campus_connect/src/view/bottom_nav.dart';
-import 'package:campus_connect/src/view/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   //text controller
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
-
-    Get.off(() => BottomNavPage(initialIndex: 0));
-    Get.snackbar('User verified!', 'logged in successfully',
-        animationDuration: Duration(milliseconds: 500),
-        colorText: Color(0xffFFFFFF));
-  }
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future signUp() async {
+    if (passwordConfirmed()) {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim());
+
+      Get.off(() => BottomNavPage(initialIndex: 0));
+    } else {
+      Get.snackbar('Invalid', "The password doesn't match",
+          colorText: Color(0xffFFFFFF));
+    }
+  }
+
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+        _confirmPasswordController.text.trim()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(
+              Icons.arrow_back_ios_new_outlined,
+              color: Color(0xffFFFFFF),
+            )),
+        backgroundColor: Colors.transparent,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -82,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                   Form(
                     key: formKey,
                     child: SizedBox(
-                      height: 360.h,
+                      height: 392.h,
                       width: 300.w,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -90,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           children: [
                             Text(
-                              'Login',
+                              'Register',
                               style: TextStyle(
                                 fontSize: 32.sp,
                                 fontWeight: FontWeight.w700,
@@ -98,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
 
-                            SizedBox(height: 30.h),
+                            SizedBox(height: 20.h),
 
                             //email
                             TextFormField(
@@ -120,6 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                   hintText: 'Enter you email',
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 14.sp),
                                   labelText: 'Email address',
                                   labelStyle: TextStyle(
                                     color: Color(0xffFFFFFF),
@@ -150,6 +174,8 @@ class _LoginPageState extends State<LoginPage> {
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
                                   hintText: 'Enter your password',
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 14.sp),
                                   labelText: 'Password',
                                   labelStyle: TextStyle(
                                     color: Color(0xffFFFFFF),
@@ -158,36 +184,43 @@ class _LoginPageState extends State<LoginPage> {
                                   )),
                             ),
 
-                            SizedBox(height: 10.sp),
+                            SizedBox(height: 10.h),
 
-                            //forgot password
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Color(0xffFFFFFF)),
-                                ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Text(
-                                    ' Reset',
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Color(0xffFFFFFF),
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                )
-                              ],
+                            //confirm password
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              cursorColor: Color(0xffFFFFFF),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "The password can't be empty";
+                                }
+                                if (value.length < 8) {
+                                  return "Password must be greater than 8 characters";
+                                }
+                                return null;
+                              },
+                              style: TextStyle(color: Color(0xffFFFFFF)),
+                              obscureText: true,
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: InputDecoration(
+                                  hintText: 'Enter your password',
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 14.sp),
+                                  labelText: 'Confirm Password',
+                                  labelStyle: TextStyle(
+                                    color: Color(0xffFFFFFF),
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  )),
                             ),
 
-                            SizedBox(height: 30.h),
+                            SizedBox(height: 20.h),
 
-                            //login button
+                            //Signup button
                             SizedBox(
-                                width: 260.w, 
+                                width: 260.w,
                                 height: 50.h,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -195,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5.0),
                                       side: BorderSide(
-                                        color: Colors.white, // 👈 white border
+                                        color: Colors.white,
                                         width: 2, // optional: border width
                                       ),
                                     ),
@@ -206,11 +239,11 @@ class _LoginPageState extends State<LoginPage> {
                                     if (isValid == false) {
                                       return;
                                     } else {
-                                      signIn();
+                                      signUp();
                                     }
                                   },
                                   child: Text(
-                                    'Login',
+                                    'Sign up',
                                     style: TextStyle(
                                         color: Color(0xffFFFFFF),
                                         fontSize: 16.sp),
@@ -223,39 +256,23 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 20.h),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Not registered yet? ',
-                        style: TextStyle(
-                            color: Color(0xffFFFFFF),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      GestureDetector(
-                        onTap: () => Get.to(() => RegisterPage()),
-                        child: Text(
-                          'Register now.',
-                          style: TextStyle(
-                              color: Color(0xffFFFFFF),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Not registered yet? ',
+                    style: TextStyle(
+                        color: Color(0xffFFFFFF),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400),
                   ),
+                  SizedBox(height: 10.h),
 
-                  SizedBox(height: 20.h),
-
-                  //google login
-                  // IconButton(
-                  //     onPressed: () {},
-                  //     icon: SvgPicture.asset(
-                  //       'assets/loginGoogle.svg',
-                  //       height: 50.h,
-                  //       width: 50.w,
-                  //     ))
+                  // google login
+                  IconButton(
+                      onPressed: () {},
+                      icon: SvgPicture.asset(
+                        'assets/loginGoogle.svg',
+                        height: 50.h,
+                        width: 50.w,
+                      ))
                 ],
               ),
             ),
