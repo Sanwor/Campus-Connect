@@ -16,6 +16,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  bool isObscure = true;
+
   //text controller
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -146,9 +148,23 @@ class _LoginPageState extends State<LoginPage> {
                                 return null;
                               },
                               style: TextStyle(color: Color(0xffFFFFFF)),
-                              obscureText: true,
+                              obscureText: isObscure,
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isObscure = !isObscure;
+                                      });
+                                    },
+                                    icon: SvgPicture.asset(
+                                      isObscure
+                                          ? 'assets/hide_post_icon.svg'
+                                          : 'assets/eye_outlined.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.white, BlendMode.srcIn),
+                                    ),
+                                  ),
                                   hintText: 'Enter your password',
                                   labelText: 'Password',
                                   labelStyle: TextStyle(
@@ -187,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             //login button
                             SizedBox(
-                                width: 260.w, 
+                                width: 260.w,
                                 height: 50.h,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
