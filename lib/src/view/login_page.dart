@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:campus_connect/src/view/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -71,14 +72,14 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'CampusConnect is an app that enhances communication and information accessibility\nwithin the college.',
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 12.h,
                       fontWeight: FontWeight.w300,
                       color: Color(0xffFFFFFF),
                     ),
                     textAlign: TextAlign.center,
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 20.h),
 
                   //login container
                   Form(
@@ -108,16 +109,8 @@ class _LoginPageState extends State<LoginPage> {
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "This is a required field";
-                                }
-
-                                if (value.length > 255) {
-                                  return "Only 3 Characters can be Entered";
-                                }
-                                return null;
-                              },
+                              validator: (email) =>
+                                  validateEmail(string: email!),
                               style: TextStyle(color: Color(0xffFFFFFF)),
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
@@ -138,15 +131,8 @@ class _LoginPageState extends State<LoginPage> {
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "The password can't be empty";
-                                }
-                                if (value.length < 8) {
-                                  return "Password must be greater than 8 characters";
-                                }
-                                return null;
-                              },
+                              validator: (password) =>
+                                  validatePassword(string: password!),
                               style: TextStyle(color: Color(0xffFFFFFF)),
                               obscureText: isObscure,
                               keyboardType: TextInputType.visiblePassword,

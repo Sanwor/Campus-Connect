@@ -1,10 +1,10 @@
 import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
+import 'package:campus_connect/src/widgets/notice_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isViewAll = false;
   final user = FirebaseAuth.instance.currentUser!;
   final String today = getTodayName();
   @override
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  "Today's Schedule:",
+                  "$today's Schedule:",
                   style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -144,6 +145,7 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 SizedBox(height: 20.h),
+
                 Text(
                   'Recent Notices',
                   style: TextStyle(
@@ -152,71 +154,56 @@ class _HomePageState extends State<HomePage> {
                       color: Color(0xffFFFFFF)),
                 ),
 
-                //recent notices
+                Row(
+                  children: [
+                    Spacer(),
+
+                    // View All button
+                    Visibility(
+                      visible: notices.length > 3,
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isViewAll = !isViewAll;
+                          });
+                        },
+                        child: Text(
+                          isViewAll ? "View Less" : "View All",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.h,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // List of notices
                 Flexible(
                   fit: FlexFit.loose,
                   child: ListView.separated(
-                      separatorBuilder: (context, index) => SizedBox(
-                            height: 10,
-                          ),
-                      padding: EdgeInsets.only(top: 30.h, bottom: 30.h),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(16.sp),
-                          child: Container(
-                            height: 100.h,
-                            width: 320.w,
-                            color: Color(0xff577AAE),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 50.w,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset('assets/bell.svg')
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 100.h,
-                                    width: 250.w,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'May 12',
-                                          style: TextStyle(
-                                              color: Color(0xffFFFFFF),
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                        Text(
-                                          'BIT 5th Semester - 2079 Exam Notice',
-                                          style: TextStyle(
-                                              color: Color(0xffFFFFFF),
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w500),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                )
+                    separatorBuilder: (context, index) => SizedBox(height: 10),
+                    padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    itemCount: isViewAll
+                        ? notices.length
+                        : (notices.length > 3 ? 3 : notices.length),
+                    itemBuilder: (context, index) {
+                      final notice = notices[index];
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(16.sp),
+                        child: NoticeContainer(
+                          title: notice['title'].toString(),
+                          dateTime: notice['date'].toString(),
+                          onTap: () {},
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

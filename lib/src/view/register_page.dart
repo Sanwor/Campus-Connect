@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  bool isObscure1 = true;
+  bool isObscure2 = true;
 
   @override
   void dispose() {
@@ -128,16 +132,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "This is a required field";
-                                }
-
-                                if (value.length > 255) {
-                                  return "Only 3 Characters can be Entered";
-                                }
-                                return null;
-                              },
+                              validator: (email) =>
+                                  validateEmail(string: email!),
                               style: TextStyle(color: Color(0xffFFFFFF)),
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
@@ -160,19 +156,26 @@ class _RegisterPageState extends State<RegisterPage> {
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "The password can't be empty";
-                                }
-                                if (value.length < 8) {
-                                  return "Password must be greater than 8 characters";
-                                }
-                                return null;
-                              },
+                              validator: (password) =>
+                                  validatePassword(string: password!),
                               style: TextStyle(color: Color(0xffFFFFFF)),
-                              obscureText: true,
+                              obscureText: isObscure1,
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isObscure1 = !isObscure1;
+                                      });
+                                    },
+                                    icon: SvgPicture.asset(
+                                      isObscure1
+                                          ? 'assets/hide_post_icon.svg'
+                                          : 'assets/eye_outlined.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.white, BlendMode.srcIn),
+                                    ),
+                                  ),
                                   hintText: 'Enter your password',
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 14.sp),
@@ -192,19 +195,28 @@ class _RegisterPageState extends State<RegisterPage> {
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "The password can't be empty";
-                                }
-                                if (value.length < 8) {
-                                  return "Password must be greater than 8 characters";
-                                }
-                                return null;
-                              },
+                              validator: (confirmPassword) =>
+                                  validateConfirmPassword(
+                                      password: _passwordController.text,
+                                      confirmPassword: confirmPassword!),
                               style: TextStyle(color: Color(0xffFFFFFF)),
-                              obscureText: true,
+                              obscureText: isObscure2,
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isObscure2 = !isObscure2;
+                                      });
+                                    },
+                                    icon: SvgPicture.asset(
+                                      isObscure2
+                                          ? 'assets/hide_post_icon.svg'
+                                          : 'assets/eye_outlined.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.white, BlendMode.srcIn),
+                                    ),
+                                  ),
                                   hintText: 'Enter your password',
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 14.sp),
