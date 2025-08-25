@@ -53,6 +53,9 @@ class _RoutinePageState extends State<RoutinePage> {
                         List<Map<String, String>> daySchedule = schedule[day]!;
 
                         return ExpansionTile(
+                          iconColor: Colors.white,
+                          collapsedIconColor: Colors.white,
+                          backgroundColor: Color(0xff577AAE),
                           title: Text(
                             day,
                             style: TextStyle(color: Color(0xffFFFFFF)),

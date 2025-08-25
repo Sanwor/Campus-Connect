@@ -1,4 +1,5 @@
 import 'package:campus_connect/src/controller/chat_controller.dart';
+import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:campus_connect/src/widgets/notice_container.dart';
@@ -15,9 +16,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final NoticeController noticeCon = Get.put(NoticeController());
+
   bool isViewAll = false;
   final user = FirebaseAuth.instance.currentUser!;
   final String today = getTodayName();
+
+  @override
+  void initState() {
+    super.initState();
+    initialise();
+  }
+
+  initialise() async {
+    await noticeCon.getNoticeList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,29 +195,31 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // List of notices
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) => SizedBox(height: 10),
-                    padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    itemCount: isViewAll
-                        ? notices.length
-                        : (notices.length > 3 ? 3 : notices.length),
-                    itemBuilder: (context, index) {
-                      final notice = notices[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(16.sp),
-                        child: NoticeContainer(
-                          title: notice['title'].toString(),
-                          dateTime: notice['date'].toString(),
-                          onTap: () {},
-                        ),
-                      );
-                    },
+                if (noticeCon.noticeList.isNotEmpty)
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 10.h),
+                      padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: noticeCon.noticeList.length >= 3
+                          ? 3
+                          : noticeCon.noticeList.length,
+                      itemBuilder: (context, index) {
+                        final notice = noticeCon.noticeList[index];
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(16.r),
+                          child: NoticeContainer(
+                            title: notice.title.toString(),
+                            dateTime: notice.publishedAt.toString(),
+                            onTap: () {},
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
               ],
             ),
           ),

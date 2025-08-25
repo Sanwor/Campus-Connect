@@ -1,28 +1,22 @@
-import 'package:campus_connect/src/view/bottom_nav.dart';
-import 'package:campus_connect/src/view/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class AuthController extends StatefulWidget {
-  const AuthController({super.key});
+class AuthController extends GetxController {
+  RxBool isLoginLoading = false.obs;
 
-  @override
-  State<AuthController> createState() => _AuthControllerState();
-}
+  Future<void> login(String email, String password) async {
+    try {
+      isLoginLoading.value = true;
 
-class _AuthControllerState extends State<AuthController> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return BottomNavPage(initialIndex: 0);
-            } else {
-              return LoginPage();
-            }
-          }),
-    );
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+    } catch (e) {
+      Get.snackbar("Login Failed", e.toString());
+    } finally {
+      isLoginLoading.value = false;
+    }
   }
 }

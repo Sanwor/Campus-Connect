@@ -1,4 +1,5 @@
 import 'package:campus_connect/src/app_utils/validations.dart';
+import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:campus_connect/src/view/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   bool isObscure = true;
+  final authController = Get.put(AuthController());
 
   //text controller
   final _emailController = TextEditingController();
@@ -188,36 +190,53 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(height: 30.h),
 
                             //login button
-                            SizedBox(
-                                width: 260.w,
-                                height: 50.h,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff193670),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      side: BorderSide(
-                                        color: Colors.white, // 👈 white border
-                                        width: 2, // optional: border width
+                            Obx(() => SizedBox(
+                                  width: 260.w,
+                                  height: 50.h,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xff193670),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        side: const BorderSide(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
                                       ),
                                     ),
+                                    onPressed: authController
+                                            .isLoginLoading.value
+                                        ? null // disable while loading
+                                        : () async {
+                                            var isValid = formKey.currentState!
+                                                .validate();
+                                            if (!isValid) return;
+
+                                            authController
+                                                .isLoginLoading.value = true;
+                                            await signIn();
+                                            authController
+                                                .isLoginLoading.value = false;
+                                          },
+                                    child: authController.isLoginLoading.value
+                                        ? const SizedBox(
+                                            width: 22,
+                                            height: 22,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Text(
+                                            'Login',
+                                            style: TextStyle(
+                                              color: const Color(0xffFFFFFF),
+                                              fontSize: 16.sp,
+                                            ),
+                                          ),
                                   ),
-                                  onPressed: () async {
-                                    var isValid =
-                                        formKey.currentState!.validate();
-                                    if (isValid == false) {
-                                      return;
-                                    } else {
-                                      signIn();
-                                    }
-                                  },
-                                  child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                        color: Color(0xffFFFFFF),
-                                        fontSize: 16.sp),
-                                  ),
-                                )),
+                                ))
                           ],
                         ),
                       ),
