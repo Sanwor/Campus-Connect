@@ -1,4 +1,5 @@
 import 'package:campus_connect/src/controller/notice_controller.dart';
+import 'package:campus_connect/src/view/notice_details.dart';
 import 'package:campus_connect/src/widgets/notice_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -72,7 +73,9 @@ class _NoticePageState extends State<NoticePage> {
                         child: NoticeContainer(
                           title: notice.title.toString(),
                           dateTime: notice.publishedAt.toString(),
-                          onTap: () {},
+                          onTap: () => Get.to(() => NoticeDetails(
+                                noticeid: noticeCon.noticeList[index].id,
+                              )),
                         ),
                       );
                     },

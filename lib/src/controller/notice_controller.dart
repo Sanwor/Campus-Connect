@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:campus_connect/src/app_config/api_repo.dart';
+import 'package:campus_connect/src/model/noticeDetail_model.dart';
 import 'package:campus_connect/src/model/notice_model.dart';
 import 'package:get/get.dart' hide MultipartFile, FormData;
 
@@ -14,7 +15,7 @@ class NoticeController extends GetxController {
     isNoticeLoading.value = true;
     try {
       var response = await ApiRepo.apiGet("notices/", "");
-      if (response != null) {
+      if (response != null) { //status code pathako chaina uta bata
         var listOfData = [];
         for (var data in response) {
           listOfData.add(NoticeModel.fromJson(data));
@@ -28,20 +29,20 @@ class NoticeController extends GetxController {
     }
   }
 
-  // getProjectDetails(id) async {
-  //   isNoticeDetailsLoading.value = true;
-  //   try {
-  //     var response = await ApiRepo.apiGet("/appadmin/projects/$id", "");
-  //     if (response != null && response["status"] == "success") {
-  //       var data = NoticeDetailsModel.fromJson(response);
-  //       projectDetails = data.data;
-  //     }
-  //   } catch (e) {
-  //     log(e.toString());
-  //   } finally {
-  //     isNoticeDetailsLoading.value = false;
-  //   }
-  // }
+  getNoticeDetails(id) async {
+    isNoticeDetailsLoading.value = true;
+    try {
+      var response = await ApiRepo.apiGet("/notices/$id", "");
+      if (response != null) {
+        var data = NoticeDetailsModel.fromJson(response);
+        noticeDetails = data;
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isNoticeDetailsLoading.value = false;
+    }
+  }
 
   // postProject(
   //     {clientId,
