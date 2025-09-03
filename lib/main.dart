@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyWidget());
@@ -105,46 +104,22 @@ class _GlobalConnectivityWrapperState extends State<GlobalConnectivityWrapper> {
             children: [
               widget.child,
               if (!isOnline)
-                Positioned.fill(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaX: 40,
-                      sigmaY: 40,
-                    ),
-                    child: Container(
-                      color: Colors.black.withAlpha(51),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                Positioned(
+                  child: SafeArea(
+                    child: Material(
+                      elevation: 8,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.wifi_off,
-                                  color: Colors.white,
-                                  size: 80,
-                                  shadows: <Shadow>[
-                                    Shadow(
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 35.0,
-                                        color: Colors.blueGrey),
-                                  ],
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'No Internet Connection',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    shadows: <Shadow>[
-                                      Shadow(
-                                          offset: Offset(2.0, 2.0),
-                                          blurRadius: 35.0,
-                                          color: Colors.blueGrey),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            Icon(Icons.wifi_off, color: Colors.white),
+                            SizedBox(width: 8.w),
+                            Text(
+                              "Offline",
+                              style: TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
