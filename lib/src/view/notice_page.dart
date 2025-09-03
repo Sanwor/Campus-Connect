@@ -17,11 +17,18 @@ class _NoticePageState extends State<NoticePage> {
   @override
   void initState() {
     super.initState();
-    initialise();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        if (mounted) {
+          initialise();
+        }
+      },
+    );
   }
 
   initialise() async {
     await noticeCon.getNoticeList();
+    if (!mounted) return; // prevent setState after dispose
     setState(() {});
   }
 
@@ -53,36 +60,44 @@ class _NoticePageState extends State<NoticePage> {
                   Color(0xff204486),
                 ]),
           ),
-          child: Column(
-            children: [
-              // List of notices
-              if (noticeCon.noticeList.isNotEmpty)
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 10.h),
-                    padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    itemCount: noticeCon.noticeList.length,
-                    itemBuilder: (context, index) {
-                      final notice = noticeCon.noticeList[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: NoticeContainer(
-                          title: notice.title.toString(),
-                          dateTime: notice.publishedAt.toString(),
-                          onTap: () => Get.to(() => NoticeDetails(
-                                noticeid: noticeCon.noticeList[index].id,
-                              )),
+          child: noticeCon.noticeList.isEmpty
+              ? Padding(
+                  padding: EdgeInsets.all(16.0.sp),
+                  child: Center(
+                      child: Text(
+                    "Notice List is Empty",
+                    style: TextStyle(color: Colors.white),
+                  )))
+              : Column(
+                  children: [
+                    // List of notices
+                    if (noticeCon.noticeList.isNotEmpty)
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 10.h),
+                          padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(),
+                          itemCount: noticeCon.noticeList.length,
+                          itemBuilder: (context, index) {
+                            final notice = noticeCon.noticeList[index];
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(16.r),
+                              child: NoticeContainer(
+                                title: notice.title.toString(),
+                                dateTime: notice.publishedAt.toString(),
+                                onTap: () => Get.to(() => NoticeDetails(
+                                      noticeid: noticeCon.noticeList[index].id,
+                                    )),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-            ],
-          )),
+                      ),
+                  ],
+                )),
     );
   }
 }

@@ -2,6 +2,8 @@
 //
 //     final noticeDetailsModel = noticeDetailsModelFromJson(jsonString);
 
+// ignore_for_file: file_names
+
 import 'dart:convert';
 
 NoticeDetailsModel noticeDetailsModelFromJson(String str) => NoticeDetailsModel.fromJson(json.decode(str));

@@ -55,3 +55,12 @@ String? validateConfirmPassword({
     return null;
   }
 }
+
+//validate is empty
+String? validateIsEmpty({required String string}) {
+  // Check if the trimmed string is empty
+  if (string.trim().isEmpty) {
+    return "Field can't be empty";
+  }
+  return null;
+}

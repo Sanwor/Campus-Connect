@@ -195,31 +195,38 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // List of notices
-                if (noticeCon.noticeList.isNotEmpty)
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 10.h),
-                      padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: noticeCon.noticeList.length >= 3
-                          ? 3
-                          : noticeCon.noticeList.length,
-                      itemBuilder: (context, index) {
-                        final notice = noticeCon.noticeList[index];
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(16.r),
-                          child: NoticeContainer(
-                            title: notice.title.toString(),
-                            dateTime: notice.publishedAt.toString(),
-                            onTap: () {},
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: noticeCon.noticeList.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.all(16.0.sp),
+                          child: Center(
+                              child: Text(
+                            "Notice List is Empty",
+                            style: TextStyle(color: Colors.white),
+                          )))
+                      : ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 10.h),
+                          padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(),
+                          itemCount: noticeCon.noticeList.length >= 3
+                              ? 3
+                              : noticeCon.noticeList.length,
+                          itemBuilder: (context, index) {
+                            final notice = noticeCon.noticeList[index];
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(16.r),
+                              child: NoticeContainer(
+                                title: notice.title.toString(),
+                                dateTime: notice.publishedAt.toString(),
+                                onTap: () {},
+                              ),
+                            );
+                          },
+                        ),
+                )
               ],
             ),
           ),
