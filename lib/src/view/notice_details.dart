@@ -3,6 +3,7 @@ import 'package:campus_connect/src/widgets/custom_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class NoticeDetails extends StatefulWidget {
   final int noticeid;
@@ -84,11 +85,13 @@ class _NoticeDetailsState extends State<NoticeDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    noticeCon.noticeDetails.publishedAt
-                                        .toString(),
+                                    DateFormat("yyyy-MM-dd").format(
+                                        noticeCon.noticeDetails.publishedAt),
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 12.h),
-                                  ),
+                                      color: Colors.white,
+                                      fontSize: 12.h,
+                                    ),
+                                  )
                                 ],
                               ),
                               SizedBox(height: 50.h),

@@ -4,7 +4,6 @@ import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/widgets/custom_network_image.dart';
 import 'package:campus_connect/src/widgets/custom_textfield.dart';
-import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

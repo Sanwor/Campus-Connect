@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class NoticeContainer extends StatefulWidget {
   final String title;
@@ -50,11 +51,13 @@ class _NoticeContainerState extends State<NoticeContainer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.dateTime,
+                        DateFormat("yyyy-MM-dd")
+                            .format(DateTime.parse(widget.dateTime)),
                         style: TextStyle(
-                            color: Color(0xffFFFFFF),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400),
+                          color: Color(0xffFFFFFF),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       Text(
                         widget.title,
