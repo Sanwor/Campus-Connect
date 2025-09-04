@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/view/login_page.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -170,6 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     //logout
                     GestureDetector(
                       onTap: () {
+                        remove('isLoggedIn');
                         Get.off(() => LoginPage());
                       },
                       child: SizedBox(

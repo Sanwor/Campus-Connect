@@ -1,7 +1,10 @@
 import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
+import 'package:campus_connect/src/view/bottom_nav.dart';
+import 'package:campus_connect/src/view/notice_details.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
+import 'package:campus_connect/src/widgets/custom_alerts.dart';
 import 'package:campus_connect/src/widgets/notice_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +31,8 @@ class _HomePageState extends State<HomePage> {
     initialise();
   }
 
-  initialise() async {
-    await noticeCon.getNoticeList();
+  initialise() {
+    noticeCon.getNoticeList();
   }
 
   @override
@@ -73,161 +76,199 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.chat),
       ),
 
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xff020826),
-                Color(0xff204486),
-              ]),
-        ),
-        child: Padding(
-          padding: EdgeInsets.only(top: 5.sp, left: 30.sp, right: 30.sp),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Welcome!\nto Campus Connect',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  "$today's Schedule:",
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xffFFFFFF)),
-                ),
+      body: RefreshIndicator(
+        onRefresh: () {
+          return noticeCon.getNoticeList();
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xff020826),
+                  Color(0xff204486),
+                ]),
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(top: 5.sp, left: 30.sp, right: 30.sp),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Welcome!\nto Campus Connect',
+                        style: TextStyle(
+                            color: Color(0xffFFFFFF),
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  Text(
+                    "$today's Schedule:",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xffFFFFFF)),
+                  ),
 
-                SizedBox(height: 10.h),
+                  SizedBox(height: 10.h),
 
-                //today's schedule
-                // Text(
-                //   today,
-                //   style: TextStyle(
-                //       fontSize: 16.sp,
-                //       fontWeight: FontWeight.w600,
-                //       color: Color(0xffFFFFFF)),
-                //   textAlign: TextAlign.left,
-                // ),
-                Center(
-                  child: schedule.containsKey(today)
-                      ? Table(
-                          columnWidths: {
-                            0: FlexColumnWidth(2),
-                            1: FlexColumnWidth(3),
+                  //today's schedule
+                  // Text(
+                  //   today,
+                  //   style: TextStyle(
+                  //       fontSize: 16.sp,
+                  //       fontWeight: FontWeight.w600,
+                  //       color: Color(0xffFFFFFF)),
+                  //   textAlign: TextAlign.left,
+                  // ),
+                  Center(
+                    child: schedule.containsKey(today)
+                        ? Table(
+                            columnWidths: {
+                              0: FlexColumnWidth(2),
+                              1: FlexColumnWidth(3),
+                            },
+                            border: TableBorder.all(color: Color(0xffFFFFFF)),
+                            children: schedule[today]!.map((entry) {
+                              return TableRow(children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    entry['time']!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Color(0xffFFFFFF)),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    entry['subject']!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Color(0xffFFFFFF)),
+                                  ),
+                                ),
+                              ]);
+                            }).toList(),
+                          )
+                        : Text(
+                            'No class schedule for today.',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  Text(
+                    'Recent Notices',
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xffFFFFFF)),
+                  ),
+
+                  Row(
+                    children: [
+                      Spacer(),
+
+                      // View All button
+                      Visibility(
+                        visible: notices.length > 3,
+                        child: TextButton(
+                          onPressed: () {
+                            Get.offAll(() => BottomNavPage(
+                                  initialIndex: 1,
+                                ));
                           },
-                          border: TableBorder.all(color: Color(0xffFFFFFF)),
-                          children: schedule[today]!.map((entry) {
-                            return TableRow(children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  entry['time']!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Color(0xffFFFFFF)),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  entry['subject']!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Color(0xffFFFFFF)),
-                                ),
-                              ),
-                            ]);
-                          }).toList(),
-                        )
-                      : Text(
-                          'No class schedule for today.',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                ),
-
-                SizedBox(height: 20.h),
-
-                Text(
-                  'Recent Notices',
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xffFFFFFF)),
-                ),
-
-                Row(
-                  children: [
-                    Spacer(),
-
-                    // View All button
-                    Visibility(
-                      visible: notices.length > 3,
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() {
-                            isViewAll = !isViewAll;
-                          });
-                        },
-                        child: Text(
-                          isViewAll ? "View Less" : "View All",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.h,
-                            fontWeight: FontWeight.w500,
+                          child: Text(
+                            "View All",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.h,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                // List of notices
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: noticeCon.noticeList.isEmpty
-                      ? Padding(
-                          padding: EdgeInsets.all(16.0.sp),
-                          child: Center(
-                              child: Text(
-                            "Notice List is Empty",
-                            style: TextStyle(color: Colors.white),
-                          )))
-                      : ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 10.h),
-                          padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                          shrinkWrap: true,
-                          physics: BouncingScrollPhysics(),
-                          itemCount: noticeCon.noticeList.length >= 3
-                              ? 3
-                              : noticeCon.noticeList.length,
-                          itemBuilder: (context, index) {
-                            final notice = noticeCon.noticeList[index];
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(16.r),
-                              child: NoticeContainer(
-                                title: notice.title.toString(),
-                                dateTime: notice.publishedAt.toString(),
-                                onTap: () {},
+                  Obx(
+                    () => noticeCon.isNoticeLoading.isTrue
+                        ? Padding(
+                            padding: EdgeInsets.all(16.0.sp),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : noticeCon.noticeList.isEmpty
+                            ? Padding(
+                                padding: EdgeInsets.all(16.0.sp),
+                                child: Center(
+                                    child: Text(
+                                  "Notice List is Empty",
+                                  style: TextStyle(color: Colors.white),
+                                )))
+                            : Flexible(
+                                fit: FlexFit.loose,
+                                child: ListView.separated(
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(height: 10.h),
+                                  padding:
+                                      EdgeInsets.only(top: 20.h, bottom: 30.h),
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(),
+                                  itemCount: noticeCon.noticeList.length >= 3
+                                      ? 3
+                                      : noticeCon.noticeList.length,
+                                  itemBuilder: (context, index) {
+                                    final notice = noticeCon.noticeList[index];
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      child: NoticeContainer(
+                                        title: notice.title.toString(),
+                                        dateTime: notice.publishedAt.toString(),
+                                        onTap: () => Get.to(() => NoticeDetails(
+                                              noticeid: noticeCon
+                                                  .noticeList[index].id,
+                                            )),
+                                        onTapMenu: (value) async {
+                                          if (value == 'delete') {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return CustomAlert(
+                                                    title: 'Delete',
+                                                    content:
+                                                        'Do you want to delete this company?',
+                                                    onTap: () async {
+                                                      noticeCon.deleteNotice(
+                                                          noticeCon
+                                                              .noticeList[index]
+                                                              .id);
+                                                    },
+                                                  );
+                                                });
+                                          }
+                                          //for update
+                                          else {}
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            );
-                          },
-                        ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

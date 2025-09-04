@@ -1,3 +1,5 @@
+import 'package:campus_connect/src/app_utils/read_write.dart';
+import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:campus_connect/src/view/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +20,13 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(Duration(milliseconds: 1500), () {
       // ignore: use_build_context_synchronously
-      Get.off(() => LoginPage());
+      if (read('isLoggedIn') != "") {
+        Get.offAll(() => BottomNavPage(
+              initialIndex: 0,
+            ));
+      } else {
+        Get.off(() => LoginPage());
+      }
     });
   }
 

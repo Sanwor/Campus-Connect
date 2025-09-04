@@ -1,13 +1,17 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:campus_connect/src/app_config/api_repo.dart';
 import 'package:campus_connect/src/model/noticeDetail_model.dart';
 import 'package:campus_connect/src/model/notice_model.dart';
-import 'package:get/get.dart' hide MultipartFile, FormData;
+import 'package:campus_connect/src/widgets/custom_toast.dart';
+import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
 
 class NoticeController extends GetxController {
   RxBool isNoticeLoading = false.obs;
   RxBool isNoticeDetailsLoading = false.obs;
   RxBool isNoticePostLoading = false.obs;
+  RxBool isNoticeDeleting = false.obs;
   RxList noticeList = [].obs;
   dynamic noticeDetails;
 
@@ -15,7 +19,8 @@ class NoticeController extends GetxController {
     isNoticeLoading.value = true;
     try {
       var response = await ApiRepo.apiGet("notices/", "");
-      if (response != null) { //status code pathako chaina uta bata
+      if (response != null) {
+        //status code pathako chaina uta bata
         var listOfData = [];
         for (var data in response) {
           listOfData.add(NoticeModel.fromJson(data));
@@ -32,7 +37,7 @@ class NoticeController extends GetxController {
   getNoticeDetails(id) async {
     isNoticeDetailsLoading.value = true;
     try {
-      var response = await ApiRepo.apiGet("/notices/$id", "");
+      var response = await ApiRepo.apiGet("notices/$id/", "");
       if (response != null) {
         var data = NoticeDetailsModel.fromJson(response);
         noticeDetails = data;
@@ -44,77 +49,60 @@ class NoticeController extends GetxController {
     }
   }
 
-  // postProject(
-  //     {clientId,
-  //     companyId,
-  //     type,
-  //     title,
-  //     details,
-  //     address,
-  //     province,
-  //     zone,
-  //     municipal,
-  //     latitude,
-  //     longitude,
-  //     landArea,
-  //     floorArea,
-  //     startDate,
-  //     plannedCompleteDate,
-  //     endDate,
-  //     estimatedCost,
-  //     actualCost,
-  //     status,
-  //     active,
-  //     document}) async {
-  //   isNoticePostLoading.value = true;
-  //   try {
-  //     var finalDoc = [];
-  //     for (var data in document) {
-  //       finalDoc.add({
-  //         "doc_type":
-  //             (data["doc_type"] as TextEditingController).text.toString(),
-  //         "doc_title":
-  //             (data["doc_title"] as TextEditingController).text.toString(),
-  //         "file_name": await MultipartFile.fromFile(data["file_name"].path),
-  //       });
-  //     }
-  //     Map<String, dynamic> formMap = {
-  //       "client_id": clientId,
-  //       "company_id": companyId,
-  //       "type": type,
-  //       "title": title,
-  //       "detail": details,
-  //       "address": address,
-  //       "province": province,
-  //       "zone": zone,
-  //       "municipal": municipal,
-  //       "latitude": latitude,
-  //       "longitude": longitude,
-  //       "land_area": landArea,
-  //       "floor_area": floorArea,
-  //       "started_date": startDate,
-  //       "planned_complete_date": plannedCompleteDate,
-  //       "end_date": endDate,
-  //       "estimated_cost": estimatedCost,
-  //       "actual_cost": actualCost,
-  //       "status": status,
-  //       "active": active,
-  //       "documents": finalDoc
-  //     };
+  postNotice({
+    required String title,
+    required String details,
+    required File? noticeImage,
+  }) async {
+    isNoticePostLoading.value = true;
+    try {
+      Map<String, dynamic> formMap = {
+        "title": title,
+        "content": details,
+      };
 
-  //     FormData formData = FormData.fromMap(formMap);
+      formMap["featured_image"] =
+          await MultipartFile.fromFile(noticeImage!.path);
 
-  //     var response = await ApiRepo.apiPost(
-  //         "/appadmin/projects/store-with-document", formData);
-  //     if (response != null && response["status"] == "success") {
-  //       Get.back();
-  //       showToast(response["message"] ?? "");
-  //       getProjectList();
-  //     }
-  //   } catch (e) {
-  //     log(e.toString());
-  //   } finally {
-  //     isNoticePostLoading.value = false;
-  //   }
-  // }
+      FormData formData = FormData.fromMap(formMap);
+
+      // API call
+      var response = await ApiRepo.apiPost("notices/", formData);
+
+      if (response != null) {
+        Get.back();
+        showToast("Notice posted successfully!");
+        await getNoticeList(); // refresh list
+      }
+    } catch (e, stack) {
+      log("Error posting notice: $e");
+      log(stack.toString());
+      showToast("Failed to post notice");
+    } finally {
+      isNoticePostLoading.value = false;
+    }
+  }
+
+  deleteNotice(id) async {
+    try {
+      // start loading
+      isNoticeDetailsLoading.value = true;
+
+      // call DELETE endpoint
+      var response = await ApiRepo.apiDelete("notices/$id/", "");
+
+      if (response != null) {
+        // success case – you can show a toast or remove from list
+        showToast("Notice with id $id deleted successfully");
+        log("Notice with id $id deleted successfully");
+
+        // Optionally: refresh notice list
+        await getNoticeList();
+      }
+    } catch (e) {
+      log("Error deleting notice: ${e.toString()}");
+    } finally {
+      isNoticeDetailsLoading.value = false;
+    }
+  }
 }

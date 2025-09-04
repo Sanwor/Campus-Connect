@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,7 +6,7 @@ showToast(message) {
   return Get.snackbar(
     "",
     "",
-    colorText: Get.isDarkMode ? Colors.white : Colors.black,
+    colorText: Colors.white,
     duration: const Duration(seconds: 3),
     messageText: const SizedBox.shrink(),
     titleText: Row(
@@ -26,7 +25,7 @@ showErrorToast(message) {
   return Get.snackbar(
     "",
     "",
-    colorText: Get.isDarkMode ? Colors.white : Colors.black,
+    colorText: Colors.white,
     duration: const Duration(seconds: 3),
     messageText: const SizedBox.shrink(),
     titleText: Row(

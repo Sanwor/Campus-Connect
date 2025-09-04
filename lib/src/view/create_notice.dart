@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:campus_connect/src/app_utils/validations.dart';
+import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/widgets/custom_network_image.dart';
 import 'package:campus_connect/src/widgets/custom_textfield.dart';
+import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,7 @@ class CreateNotice extends StatefulWidget {
 }
 
 class _CreateNoticeState extends State<CreateNotice> {
+  final NoticeController noticeCon = Get.put(NoticeController());
   final _formKey = GlobalKey<FormState>();
 
   //text controllers
@@ -322,6 +325,55 @@ class _CreateNoticeState extends State<CreateNotice> {
                           ],
                         ),
                 ),
+
+                SizedBox(height: 30.h),
+
+                Obx(() => SizedBox(
+                      width: 260.w,
+                      height: 50.h,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff193670),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0.r),
+                            side: BorderSide(
+                              color: Colors.white,
+                              width: 2.w,
+                            ),
+                          ),
+                        ),
+                        onPressed: noticeCon.isNoticePostLoading.value
+                            ? null // disable when submitting
+                            : () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                var isValid = _formKey.currentState!.validate();
+                                if (!isValid) return;
+                                if (selectedImage == null) {
+                                  Get.snackbar(
+                                      "Please add image",
+                                      colorText: Colors.white,
+                                      '',
+                                      duration: Duration(seconds: 2));
+                                  return;
+                                }
+                                noticeCon.postNotice(
+                                  title: titleCon.text,
+                                  details: detailsCon.text,
+                                  noticeImage: selectedImage,
+                                );
+                              },
+                        child: noticeCon.isNoticePostLoading.value
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : Text(
+                                'Submit',
+                                style: TextStyle(
+                                  color: const Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                      ),
+                    ))
               ]),
             ),
           ),

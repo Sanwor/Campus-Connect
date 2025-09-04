@@ -1,4 +1,3 @@
-import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -32,18 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontWeight: FontWeight.w700,
               color: Color(0xffFFFFFF)),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(() => CreateNotice(
-                      isUpdate: false,
-                    ));
-              },
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ))
-        ],
+        
       ),
       body: Container(
         padding: EdgeInsets.only(top: 120.sp),

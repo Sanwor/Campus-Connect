@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
@@ -30,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
 
+    write('isLoggedIn', 'LoggedIn');
     Get.off(() => BottomNavPage(initialIndex: 0));
     Get.snackbar('User verified!', 'logged in successfully',
         animationDuration: Duration(milliseconds: 500),
