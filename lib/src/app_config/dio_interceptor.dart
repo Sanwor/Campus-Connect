@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 class DioInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // 🔹 Using Basic Auth (username + password)
+    //  Using Basic Auth (username + password)
     const String username = "Admin";
     const String password = "admin123";
 

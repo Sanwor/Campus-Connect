@@ -138,7 +138,13 @@ class _NoticePageState extends State<NoticePage> {
                                                   });
                                             }
                                             //for update
-                                            else {}
+                                            else {
+                                              Get.to(() => CreateNotice(
+                                                    isUpdate: true,
+                                                    noticeid: noticeCon
+                                                        .noticeList[index].id,
+                                                  ));
+                                            }
                                           },
                                         ),
                                       );

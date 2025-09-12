@@ -101,10 +101,52 @@ class _NoticeDetailsState extends State<NoticeDetails> {
                                     color: Colors.white, fontSize: 15.h),
                               ),
                               SizedBox(height: 20.h),
-                              CustomDisplayNetworkImage(
-                                  url: noticeCon.noticeDetails.content,
-                                  height: 500.h,
-                                  width: double.infinity)
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => Dialog(
+                                      insetPadding: EdgeInsets.zero,
+                                      shape: null,
+                                      backgroundColor: Colors.transparent,
+                                      child: Stack(
+                                        children: [
+                                          InteractiveViewer(
+                                            child: CustomDisplayNetworkImage(
+                                                url: noticeCon.noticeDetails
+                                                    .featuredImage,
+                                                height: 600.h,
+                                                width: double.infinity),
+                                          ),
+
+                                          // ❌ Cross button
+                                          Positioned(
+                                            right: 8,
+                                            top: 8,
+                                            child: IconButton(
+                                              icon: Icon(Icons.close,
+                                                  color: Colors.white),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all(
+                                                        Colors.black54),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: CustomDisplayNetworkImage(
+                                  url: noticeCon.noticeDetails.featuredImage,
+                                  height: 500.h, // thumbnail size
+                                  width: double.infinity,
+                                ),
+                              )
                             ],
                           ),
                   )

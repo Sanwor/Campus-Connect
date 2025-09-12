@@ -12,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 class CreateNotice extends StatefulWidget {
   final bool? isUpdate;
   final int? noticeid;
-  const CreateNotice({super.key, this.isUpdate, this.noticeid});
+  const CreateNotice({super.key, required this.isUpdate, this.noticeid});
 
   @override
   State<CreateNotice> createState() => _CreateNoticeState();
@@ -20,14 +20,37 @@ class CreateNotice extends StatefulWidget {
 
 class _CreateNoticeState extends State<CreateNotice> {
   final NoticeController noticeCon = Get.put(NoticeController());
+  final NoticeController noticeDetailCon = Get.put(NoticeController());
   final _formKey = GlobalKey<FormState>();
 
   //text controllers
   final TextEditingController titleCon = TextEditingController();
   final TextEditingController detailsCon = TextEditingController();
-  final TextEditingController contactCon = TextEditingController();
 
   dynamic selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        if (mounted) {
+          initialize();
+        }
+      },
+    );
+  }
+
+  initialize() async {
+    if (widget.isUpdate == true) {
+      await noticeDetailCon.getNoticeDetails(widget.noticeid);
+      // Call details api
+      titleCon.text = noticeDetailCon.noticeDetails.title ?? '';
+      detailsCon.text = noticeDetailCon.noticeDetails.content ?? '';
+      selectedImage = noticeDetailCon.noticeDetails.featuredImage ?? '';
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -355,17 +378,28 @@ class _CreateNoticeState extends State<CreateNotice> {
                                       duration: Duration(seconds: 2));
                                   return;
                                 }
-                                noticeCon.postNotice(
-                                  title: titleCon.text,
-                                  details: detailsCon.text,
-                                  noticeImage: selectedImage,
-                                );
+                                if (widget.isUpdate == true) {
+                                  await noticeCon.patchNotice(widget.noticeid,
+                                      title: titleCon.text,
+                                      details: detailsCon.text,
+                                      noticeImage: selectedImage.runtimeType
+                                                  .toString() ==
+                                              "_File"
+                                          ? selectedImage
+                                          : null);
+                                } else {
+                                  noticeCon.postNotice(
+                                    title: titleCon.text,
+                                    details: detailsCon.text,
+                                    noticeImage: selectedImage,
+                                  );
+                                }
                               },
                         child: noticeCon.isNoticePostLoading.value
                             ? const CircularProgressIndicator(
                                 color: Colors.white)
                             : Text(
-                                'Submit',
+                                widget.isUpdate == true ? 'Update' : 'Submit',
                                 style: TextStyle(
                                   color: const Color(0xffFFFFFF),
                                   fontSize: 16.sp,

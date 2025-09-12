@@ -12,6 +12,7 @@ class NoticeController extends GetxController {
   RxBool isNoticeDetailsLoading = false.obs;
   RxBool isNoticePostLoading = false.obs;
   RxBool isNoticeDeleting = false.obs;
+  RxBool isNoticePatchLoading = false.obs;
   RxList noticeList = [].obs;
   dynamic noticeDetails;
 
@@ -80,6 +81,30 @@ class NoticeController extends GetxController {
       showToast("Failed to post notice");
     } finally {
       isNoticePostLoading.value = false;
+    }
+  }
+
+  patchNotice(id, {title, details, noticeImage}) async {
+    isNoticePatchLoading.value = true;
+    try {
+      Map<String, dynamic> formMap = {
+        "title": title,
+        "content": details,
+        "featured_image": await MultipartFile.fromFile(noticeImage.path)
+      };
+
+      FormData formData = FormData.fromMap(formMap);
+
+      var response = await ApiRepo.apiPatch("notices/$id", formData);
+      if (response != null) {
+        Get.back();
+        showToast(response["message"] ?? "");
+        getNoticeList();
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isNoticePatchLoading.value = false;
     }
   }
 
