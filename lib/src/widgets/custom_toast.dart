@@ -7,6 +7,7 @@ showToast(message) {
     "",
     "",
     colorText: Colors.white,
+    backgroundColor: Colors.white,
     duration: const Duration(seconds: 3),
     messageText: const SizedBox.shrink(),
     titleText: Row(

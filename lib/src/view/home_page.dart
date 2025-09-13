@@ -2,6 +2,7 @@ import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
+import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:campus_connect/src/view/notice_details.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:campus_connect/src/widgets/custom_alerts.dart';
@@ -259,7 +260,13 @@ class _HomePageState extends State<HomePage> {
                                                 });
                                           }
                                           //for update
-                                          else {}
+                                          else {
+                                            Get.to(() => CreateNotice(
+                                                  isUpdate: true,
+                                                  noticeid: noticeCon
+                                                      .noticeList[index].id,
+                                                ));
+                                          }
                                         },
                                       ),
                                     );

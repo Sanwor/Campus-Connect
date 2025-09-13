@@ -90,15 +90,20 @@ class NoticeController extends GetxController {
       Map<String, dynamic> formMap = {
         "title": title,
         "content": details,
-        "featured_image": await MultipartFile.fromFile(noticeImage.path)
       };
+
+      if (noticeImage != null) {
+        formMap["featured_image"] = await MultipartFile.fromFile(
+          noticeImage.path,
+        );
+      }
 
       FormData formData = FormData.fromMap(formMap);
 
-      var response = await ApiRepo.apiPatch("notices/$id", formData);
+      var response = await ApiRepo.apiPatch("notices/$id/", formData);
       if (response != null) {
         Get.back();
-        showToast(response["message"] ?? "");
+        showToast('Notice updated successfully!');
         getNoticeList();
       }
     } catch (e) {
