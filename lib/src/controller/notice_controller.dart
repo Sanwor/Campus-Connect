@@ -45,6 +45,7 @@ class NoticeController extends GetxController {
       }
     } catch (e) {
       log(e.toString());
+      showErrorToast(e.toString());
     } finally {
       isNoticeDetailsLoading.value = false;
     }

@@ -99,38 +99,44 @@ class _GlobalConnectivityWrapperState extends State<GlobalConnectivityWrapper> {
       stream: connectivityStream,
       initialData: true,
       builder: (context, snapshot) {
-        final isOnline = snapshot.data ?? true;
+        RxBool isOnline = true.obs;
 
-        return Material(
-          child: Stack(
-            children: [
-              widget.child,
-              if (!isOnline)
-                Positioned(
-                  child: SafeArea(
-                    child: Material(
-                      elevation: 8,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.wifi_off, color: Colors.white),
-                            SizedBox(width: 8.w),
-                            Text(
-                              "Offline",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
+        return Obx(
+          () {
+            final online = snapshot.data;
+            isOnline.value = online ?? true;
+            return Stack(
+              children: [
+                widget.child,
+
+                // floating banner only when offline
+                if (!isOnline.value)
+                  Positioned(
+                    child: SafeArea(
+                      child: Material(
+                        elevation: 8,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.wifi_off, color: Colors.white),
+                              SizedBox(width: 8.w),
+                              Text(
+                                "Offline",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
+              ],
+            );
+          },
         );
       },
     );
