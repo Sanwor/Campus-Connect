@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(Duration(milliseconds: 1500), () {
       // ignore: use_build_context_synchronously
-      if (read('isLoggedIn') != "") {
+      if (read("access_token") != "") {
         Get.offAll(() => BottomNavPage(
               initialIndex: 0,
             ));

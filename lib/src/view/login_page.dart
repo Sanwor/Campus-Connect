@@ -207,19 +207,17 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                       ),
                                     ),
-                                    onPressed: authController
-                                            .isLoginLoading.value
+                                    onPressed: authController.isLoginLoading.value
                                         ? null // disable while loading
                                         : () async {
-                                            var isValid = formKey.currentState!
-                                                .validate();
-                                            if (!isValid) return;
+                                          FocusManager.instance.primaryFocus?.unfocus();
+                                          var isValid = formKey.currentState!.validate();
+                                          if (!isValid) return;
 
-                                            authController
-                                                .isLoginLoading.value = true;
-                                            await signIn();
-                                            authController
-                                                .isLoginLoading.value = false;
+                                          authController.isLoginLoading.value = true;
+                                          await authController.login(
+                                    email: _emailController.text,
+                                    password: _passwordController.text);
                                           },
                                     child: authController.isLoginLoading.value
                                         ? const SizedBox(

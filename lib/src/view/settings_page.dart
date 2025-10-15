@@ -173,6 +173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () {
                         remove('isLoggedIn');
                         Get.off(() => LoginPage());
+                        clearAllData();
                       },
                       child: SizedBox(
                         width: 300.w,

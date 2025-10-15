@@ -1,18 +1,20 @@
-import 'dart:convert';
 import 'dart:developer';
+import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:dio/dio.dart';
 
 class DioInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     //  Using Basic Auth (username + password)
-    const String username = "Admin";
-    const String password = "admin123";
+    // const String username = "Admin";
+    // const String password = "admin123";
 
-    String basicAuth =
-        'Basic ${base64Encode(utf8.encode('$username:$password'))}';
-
-    options.headers['Authorization'] = basicAuth;
+    // String basicAuth = 'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+    String token = read("access_token") ?? "";
+    if(token != "") {
+      options.headers['Authorization'] = "Bearer $token";
+    }
+    
 
     return super.onRequest(options, handler);
   }

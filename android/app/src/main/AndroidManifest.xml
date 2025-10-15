@@ -10,6 +10,8 @@
     <!--For older Android versions (pre-Android 13 / API 33)-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!--For Android 13 (API 33) and higher-->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>

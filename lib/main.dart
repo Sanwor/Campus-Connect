@@ -1,4 +1,6 @@
+import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -8,10 +10,16 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+Future<void> backgroundHandler(RemoteMessage message) async{
+  debugPrint(message.data.toString());
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Firebase.initializeApp();
+  await NotificationService.initNotification();
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   runApp(const MyWidget());
 }
 
@@ -23,6 +31,12 @@ class MyWidget extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MyWidget> {
+  @override
+  void initState() {
+    //Detect Push Notiication acc to app lifecycle
+    NotificationService.getPushedNotification(context);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(

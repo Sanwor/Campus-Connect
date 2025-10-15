@@ -20,7 +20,6 @@ remove(String storageName) {
 }
 
 clearAllData() {
-  var currentServer = read('serverMode');
   log('\x1B[31mAlert => Clearing all cached data\x1B[0m');
 
   // // Delete existing controllers
@@ -31,7 +30,6 @@ clearAllData() {
   box.erase();
 
   // Write the preserved value back
-  write('serverMode', currentServer);
 
   // // Reinitialize the controllers
   // Get.put(AuthController());
