@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: 300.w,
                       child: Padding(
                         padding: EdgeInsets.only(
-                            left: 20.sp, right: 20.sp, top: 10.sp),
+                            left: 10.sp, right: 10.sp, top: 10.sp),
                         child: Column(
                           children: [
                             Text(

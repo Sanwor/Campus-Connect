@@ -61,6 +61,8 @@ class _NoticeContainerState extends State<NoticeContainer> {
                       ),
                       Text(
                         widget.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             color: Color(0xffFFFFFF),
                             fontSize: 16.sp,

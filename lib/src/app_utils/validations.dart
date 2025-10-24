@@ -64,3 +64,12 @@ String? validateIsEmpty({required String string}) {
   }
   return null;
 }
+
+
+//registration validation
+String? validateRequired({required String string, required String field}) {
+  if (string.isEmpty) {
+    return '$field is required';
+  }
+  return null;
+}
