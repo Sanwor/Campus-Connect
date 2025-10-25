@@ -1,13 +1,15 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:campus_connect/src/app_config/api_repo.dart';
 import 'package:campus_connect/src/model/noticeDetail_model.dart';
 import 'package:campus_connect/src/model/notice_model.dart';
+import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 
 class NoticeController extends GetxController {
+  final NoticeService _noticeService = Get.find();
   RxBool isNoticeLoading = false.obs;
   RxBool isNoticeDetailsLoading = false.obs;
   RxBool isNoticePostLoading = false.obs;
@@ -19,11 +21,10 @@ class NoticeController extends GetxController {
   getNoticeList() async {
     isNoticeLoading.value = true;
     try {
-      var response = await ApiRepo.apiGet("notices/", "");
-      if (response != null) {
-        //status code pathako chaina uta bata
+      final response = await _noticeService.getNotices();
+      if (response.statusCode == 200 || response.statusCode == 201) {
         var listOfData = [];
-        for (var data in response) {
+        for (var data in response.data) { // Access response.data
           listOfData.add(NoticeModel.fromJson(data));
         }
         noticeList.value = listOfData;
@@ -38,9 +39,10 @@ class NoticeController extends GetxController {
   getNoticeDetails(id) async {
     isNoticeDetailsLoading.value = true;
     try {
-      var response = await ApiRepo.apiGet("notices/$id/", "");
-      if (response != null) {
-        var data = NoticeDetailsModel.fromJson(response);
+      // Using NoticeService for GET notice details
+      final response = await _noticeService.getNoticeDetail(id);
+      if (response.statusCode == 200) {
+        var data = NoticeDetailsModel.fromJson(response.data);
         noticeDetails = data;
       }
     } catch (e) {
@@ -63,15 +65,16 @@ class NoticeController extends GetxController {
         "content": details,
       };
 
-      formMap["featured_image"] =
-          await MultipartFile.fromFile(noticeImage!.path);
+      if (noticeImage != null) {
+        formMap["featured_image"] = await MultipartFile.fromFile(noticeImage.path);
+      }
 
       FormData formData = FormData.fromMap(formMap);
 
-      // API call
-      var response = await ApiRepo.apiPost("notices/", formData);
+      // Using NoticeService instead of ApiRepo
+      final response = await _noticeService.createNotice(formData);
 
-      if (response != null) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         Get.back();
         showToast("Notice posted successfully!");
         await getNoticeList(); // refresh list
@@ -101,8 +104,10 @@ class NoticeController extends GetxController {
 
       FormData formData = FormData.fromMap(formMap);
 
-      var response = await ApiRepo.apiPatch("notices/$id/", formData);
-      if (response != null) {
+      // Using NoticeService instead of ApiRepo
+      final response = await _noticeService.updateNotice(id, formData);
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
         Get.back();
         showToast('Notice updated successfully!');
         getNoticeList();
@@ -116,18 +121,16 @@ class NoticeController extends GetxController {
 
   deleteNotice(id) async {
     try {
-      // start loading
       isNoticeDetailsLoading.value = true;
 
-      // call DELETE endpoint
-      var response = await ApiRepo.apiDelete("notices/$id/", "");
+      // Using NoticeService instead of ApiRepo
+      final response = await _noticeService.deleteNotice(id);
 
-      if (response != null) {
-        // success case – you can show a toast or remove from list
-        showToast("Notice with id $id deleted successfully");
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        showToast("Notice deleted successfully");
         log("Notice with id $id deleted successfully");
 
-        // Optionally: refresh notice list
+        // Refresh notice list
         await getNoticeList();
       }
     } catch (e) {
@@ -136,4 +139,82 @@ class NoticeController extends GetxController {
       isNoticeDetailsLoading.value = false;
     }
   }
+
+  // Add to your NoticeController
+testCredentialsDirectly() async {
+  try {
+    final dio = Dio();
+    
+    const String username = "Admin";
+    const String password = "admin123";
+    String basicAuth = 'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+    
+    log('Testing credentials: $username:$password');
+    log('Base64: ${base64Encode(utf8.encode('$username:$password'))}');
+    
+    // Test with a simple GET first
+    final response = await dio.get(
+      'http://192.168.1.4:8000/api/notices/',
+      options: Options(headers: {
+        'Authorization': basicAuth,
+      }),
+    );
+    
+    log('✅ GET TEST SUCCESS: ${response.statusCode}');
+    log('Response data: ${response.data}');
+    
+    return true;
+  } catch (e) {
+    log('❌ GET TEST FAILED: $e');
+    if (e is DioException) {
+      log('Error response: ${e.response?.data}');
+      log('Error status: ${e.response?.statusCode}');
+    }
+    return false;
+  }
+}
+
+
+// Test both GET and PATCH with the same credentials
+testBothMethods() async {
+  try {
+    final dio = Dio();
+    
+    const String username = "Admin";
+    const String password = "admin123";
+    String basicAuth = 'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+    
+    // Test GET
+    log('Testing GET...');
+    final getResponse = await dio.get(
+      'http://192.168.1.4:8000/api/notices/',
+      options: Options(headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json',
+      }),
+    );
+    log('✅ GET Success: ${getResponse.statusCode}');
+    
+    // Test PATCH with simple data
+    log('Testing PATCH...');
+    final patchResponse = await dio.patch(
+      'http://192.168.1.4:8000/api/notices/2/',
+      data: {
+        "title": "Test Update",
+        "content": "Test content"
+      },
+      options: Options(headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json',
+      }),
+    );
+    log('✅ PATCH Success: ${patchResponse.statusCode}');
+    
+  } catch (e) {
+    log('❌ Test failed: $e');
+    if (e is DioException) {
+      log('Error details: ${e.response?.data}');
+    }
+  }
+}
 }

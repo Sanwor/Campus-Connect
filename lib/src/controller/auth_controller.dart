@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:campus_connect/src/app_config/api_repo.dart';
 import 'package:campus_connect/src/app_utils/read_write.dart';
+import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:campus_connect/src/view/login_page.dart';
@@ -10,8 +11,11 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 
 class AuthController extends GetxController {
+  final AuthService _authService = Get.find();
   RxBool isLoginLoading = false.obs;
   RxBool isRegisterLoading = false.obs;
+  var username = ''.obs;
+  RxBool isAdmin = false.obs; 
 
 
   // Future<void> login(String email, String password) async {
@@ -31,36 +35,48 @@ class AuthController extends GetxController {
   // }
 
   // Login
-  login({required String email, required String password}) async {
+  Future<void> login({required String email, required String password}) async {
     isLoginLoading.value = true;
 
-    var data = {
-      "email": email,
-      "password": password,
-      // "fcm_token" : await NotificationService.getFcmToken()
-    };
+    ///old function for auth
+    // var data = {
+    //   "email": email,
+    //   "password": password,
+    //   // "fcm_token" : await NotificationService.getFcmToken()
+    // };
 
     try {
-      var response = await ApiRepo.apiPost("auth/login/", data);
+      // var response = await ApiRepo.apiPost("auth/login/", data);
+      final response = await _authService.login(email, password);
       
-      if (response != null) {
+      if (response.statusCode == 200 || response.statusCode == 201 ) {
         // Store tokens
-        write("access_token", response["access"] ?? "");
-        write("refresh_token", response["refresh"] ?? "");
+        write("access_token", response.data["access"] ?? "");
+        write("refresh_token", response.data["refresh"] ?? "");
+
+        // DEBUG: Print the entire response to see available fields
+        log('🔍 LOGIN RESPONSE DATA: ${response.data}');
+        log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
         
         // Extract username from message
-        String message = response["message"] ?? "";
-        String? username;
-        if (message.contains("Welcome back,")) {
-          username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
-          write("userName", username);
-        }
+        String message = response.data["message"] ?? "";
+      if (message.contains("Welcome back,")) {
+        String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
+        write("userName", username);
+        this.username.value = username; // Also store in controller
+      }
+
+      /// Extract and save user role (admin or not)
+      bool isAdminUser = _checkIfAdmin(response.data);
+      log('🔍 IS ADMIN RESULT: $isAdminUser');
+      write("isAdmin", isAdminUser.toString());
+      isAdmin.value = isAdminUser;
         
         showToast("Login successful!");
         Get.offAll(() => BottomNavPage(initialIndex: 0));
       } else {
         // Handle error response
-        String errorMessage = response["message"] ?? "Login failed";
+        String errorMessage = response.data["message"] ?? "Login failed";
         showErrorToast(errorMessage);
       }
     } catch (e) {
@@ -72,7 +88,7 @@ class AuthController extends GetxController {
   }
 
   // Register
-  register({
+  Future<void> register({
     required String email,
     required String password,
     required String password2,
@@ -86,54 +102,84 @@ class AuthController extends GetxController {
     String? imagePath,
   }) async {
     isRegisterLoading.value = true;
-    
-
-    var data = FormData.fromMap({
-      "email": email,
-      "password": password,
-      "password2": password2,
-      "first_name": firstName,
-      "last_name": lastName,
-      "roll_no": rollNo,
-      "semester": semester,
-      "dob": dob, // BS format: YYYY-MM-DD
-      "address": address,
-      "shift": shift.toLowerCase(), // Convert to lowercase
-      "image" :  await MultipartFile.fromFile(imagePath!)
-    });
 
     try {
-      var response = await ApiRepo.apiPost("auth/register/", data);
+      var data = FormData.fromMap({
+        "email": email,
+        "password": password,
+        "password2": password2,
+        "first_name": firstName,
+        "last_name": lastName,
+        "roll_no": rollNo,
+        "semester": semester,
+        "dob": dob,
+        "address": address,
+        "shift": shift.toLowerCase(),
+        "image": imagePath != null ? await MultipartFile.fromFile(imagePath) : null,
+      });
+
+      final response = await _authService.register(data);
       
-      if (response != null && (response.statusCode == 201 || response.statusCode == 200)) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         // Registration successful
-        showToast("Registration successful!");
+        Get.snackbar('Success', 'Registration successful!');
         
+        // Navigate to login page
         Get.offAll(() => LoginPage());
-        // Optionally auto-login after registration
-        // Get.offAll(() => BottomNavBar(initialIndex: 0));
         
-      } else if (response != null && response.statusCode == 400) {
+        // Optionally auto-login after registration
+        // Get.offAllNamed('/home');
+        
+      } else if (response.statusCode == 400) {
         // Handle validation errors
         String errorMessage = "Registration failed";
-        if (response["detail"] != null) {
-          errorMessage = response["detail"];
-        } else if (response["email"] != null) {
-          errorMessage = "Email: ${response["email"][0]}";
-        } else if (response["password"] != null) {
-          errorMessage = "Password: ${response["password"][0]}";
-        } else if (response["profile"] != null) {
-          errorMessage = "Profile: ${response["profile"][0]}";
+        if (response.data["detail"] != null) {
+          errorMessage = response.data["detail"];
+        } else if (response.data["email"] != null) {
+          errorMessage = "Email: ${response.data["email"][0]}";
+        } else if (response.data["password"] != null) {
+          errorMessage = "Password: ${response.data["password"][0]}";
+        } else if (response.data["profile"] != null) {
+          errorMessage = "Profile: ${response.data["profile"][0]}";
         }
-        showErrorToast(errorMessage);
+        Get.snackbar('Error', errorMessage);
       } else {
-        showErrorToast("Registration failed. Please try again.");
+        Get.snackbar('Error', "Registration failed. Please try again.");
       }
     } catch (e) {
       log(e.toString());
-      showErrorToast("An error occurred during registration");
+      Get.snackbar('Error', "An error occurred during registration");
     } finally {
       isRegisterLoading.value = false;
     }
-}
-}
+  }
+
+    // Method to determine if user is admin
+      bool _checkIfAdmin(Map<String, dynamic> responseData) {
+      // Extract username from the welcome message
+      String message = responseData["message"] ?? "";
+      
+      if (message.contains("Welcome back,")) {
+        String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
+        
+        // Simple check - if username is "Admin" (exactly as in your message)
+        bool isAdminUser = username == "Admin";
+        
+        log('🔍 ADMIN CHECK - Username: "$username", Is Admin: $isAdminUser');
+        return isAdminUser;
+      }
+      
+      return false;
+    }
+
+    // Add logout method to clear admin status
+  void logout() {
+    write("access_token", "");
+    write("refresh_token", "");
+    write("userName", "");
+    write("isAdmin", "false");
+    username.value = '';
+    isAdmin.value = false;
+    Get.offAllNamed('login/');
+  }
+  }

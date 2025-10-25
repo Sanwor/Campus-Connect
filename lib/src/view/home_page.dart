@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
@@ -13,7 +14,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final AuthController authController = Get.find<AuthController>();
+  HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -103,7 +105,9 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     children: [
                       Text(
-                        'Welcome!\nto Campus Connect',
+                        'Welcome! \n${widget.authController.username.value.isNotEmpty ? widget.authController.username.value : "Admin"}.',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             color: Color(0xffFFFFFF),
                             fontSize: 30.sp,

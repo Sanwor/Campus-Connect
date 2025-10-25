@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:campus_connect/src/view/notice_details.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class NoticePage extends StatefulWidget {
-  const NoticePage({super.key});
+  final AuthController authController = Get.find<AuthController>();
+  NoticePage({super.key});
 
   @override
   State<NoticePage> createState() => _NoticePageState();
@@ -41,16 +43,19 @@ class _NoticePageState extends State<NoticePage> {
               color: Color(0xffFFFFFF)),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(() => CreateNotice(
-                      isUpdate: false,
-                    ));
-              },
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ))
+          Obx(
+            ()=> widget.authController.isAdmin.value
+              ?IconButton(
+                onPressed: () {
+                  Get.to(() => CreateNotice(
+                        isUpdate: false,
+                      ));
+                },
+                icon: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                )): SizedBox(width: 40.w), // Empty space to maintain layout,
+          )
         ],
       ),
       body: Obx(

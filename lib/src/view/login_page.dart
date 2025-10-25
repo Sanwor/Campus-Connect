@@ -20,7 +20,9 @@ class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   bool isObscure = true;
-  final authController = Get.put(AuthController());
+  // final authController = Get.put(AuthController()); //old controller
+  // Get the controller
+  final AuthController authController = Get.find();
 
   //text controller
   final _emailController = TextEditingController();

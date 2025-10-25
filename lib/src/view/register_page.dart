@@ -18,7 +18,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final AuthController authController = Get.put(AuthController());
+  // final AuthController authController = Get.put(AuthController()); // old controller
+  final AuthController authController = Get.find();
 
   // Text controllers
   final _emailController = TextEditingController();

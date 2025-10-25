@@ -1,3 +1,4 @@
+import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +11,8 @@ class NoticeContainer extends StatefulWidget {
   final String dateTime;
   final VoidCallback onTap;
   final PopupMenuItemSelected<dynamic> onTapMenu;
-  const NoticeContainer(
+  final AuthController authController = Get.find<AuthController>();
+  NoticeContainer(
       {super.key,
       required this.title,
       required this.dateTime,
@@ -25,6 +27,7 @@ class _NoticeContainerState extends State<NoticeContainer> {
   final NoticeController noticeCon = Get.put(NoticeController());
   @override
   Widget build(BuildContext context) {
+    
     return GestureDetector(
         onTap: widget.onTap,
         child: ClipRRect(
@@ -71,41 +74,44 @@ class _NoticeContainerState extends State<NoticeContainer> {
                     ],
                   ),
                 ),
-                PopupMenuButton(
-                  color: Colors.white,
-                  onSelected: widget.onTapMenu,
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete_outline_outlined,
-                            color: Colors.red,
-                          ),
-                          Text(
-                            'Delete',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
+                Obx(
+                  ()=>widget.authController.isAdmin.value
+                  ? PopupMenuButton(
+                    color: Colors.white,
+                    onSelected: widget.onTapMenu,
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete_outline_outlined,
+                              color: Colors.red,
+                            ),
+                            Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 'update',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.edit_outlined,
-                            color: Colors.lightBlue,
-                          ),
-                          Text(
-                            'Update',
-                            style: TextStyle(color: Colors.lightBlue),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                      PopupMenuItem(
+                        value: 'update',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.edit_outlined,
+                              color: Colors.lightBlue,
+                            ),
+                            Text(
+                              'Update',
+                              style: TextStyle(color: Colors.lightBlue),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ): SizedBox(width: 40.w), // Empty space to maintain layout,
                 ),
               ]),
             ),

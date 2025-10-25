@@ -1,4 +1,12 @@
+import 'dart:developer';
+
+import 'package:campus_connect/src/app_config/constant.dart';
+import 'package:campus_connect/src/app_config/dio_interceptor.dart';
+import 'package:campus_connect/src/controller/auth_controller.dart';
+import 'package:campus_connect/src/services/auth_service.dart';
+import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,6 +28,33 @@ void main() async {
   await Firebase.initializeApp();
   await NotificationService.initNotification();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
+  // Initialize Dio (add this before runApp)
+  // Update your Dio initialization in main.dart
+final dio = Dio(
+  BaseOptions(
+    baseUrl: getBaseUrl(),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
+  ),
+)
+  ..interceptors.add(DioInterceptor())
+  ..interceptors.add(LogInterceptor(
+    request: true,
+    requestHeader: true,
+    requestBody: true,
+    responseHeader: true,
+    responseBody: true,
+    error: true,
+    logPrint: (object) => log(object.toString()),
+  ));
+
+  // Register instances
+  Get.put<Dio>(dio);
+  Get.put<AuthService>(AuthService(dio));
+  Get.put<NoticeService>(NoticeService(dio));
+  Get.put<AuthController>(AuthController());
+  
   runApp(const MyWidget());
 }
 
