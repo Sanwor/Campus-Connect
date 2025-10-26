@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:campus_connect/src/app_config/api_repo.dart';
 import 'package:campus_connect/src/app_utils/read_write.dart';
+import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/view/bottom_nav.dart';
@@ -180,6 +181,11 @@ class AuthController extends GetxController {
     write("isAdmin", "false");
     username.value = '';
     isAdmin.value = false;
+
+    // Clear profile data
+    final ProfileController profileController = Get.find<ProfileController>();
+    profileController.profile.value = null;
+    
     Get.offAllNamed('login/');
   }
   }

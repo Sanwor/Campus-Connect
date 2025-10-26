@@ -1,3 +1,5 @@
+import 'package:campus_connect/src/controller/auth_controller.dart';
+import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,6 +12,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final ProfileController profileController = Get.find<ProfileController>();
+  final AuthController authController = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load profile when page opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      profileController.getProfile();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +45,6 @@ class _ProfilePageState extends State<ProfilePage> {
               fontWeight: FontWeight.w700,
               color: Color(0xffFFFFFF)),
         ),
-        
       ),
       body: Container(
         padding: EdgeInsets.only(top: 120.sp),
@@ -46,90 +59,148 @@ class _ProfilePageState extends State<ProfilePage> {
                 Color(0xff204486),
               ]),
         ),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 60.sp,
-              backgroundImage: AssetImage('assets/profile.png'),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'User name',
-              style: TextStyle(
-                  color: Color(0xffFFFFFF),
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w500),
-            ),
-            Text(
-              'student',
-              style: TextStyle(
-                  color: Color(0xff8E8E93),
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w400),
-            ),
+        child: Obx(() {
+          if (profileController.isLoading.value) {
+            return Center(child: CircularProgressIndicator(color: Colors.white));
+          }
 
-            //details container
-            SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding: EdgeInsets.only(left: 30.sp, top: 50.sp),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Roll No.:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Programme:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Year/shift:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Address:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Contact No.:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'DOB:',
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500),
-                    )
-                  ],
+          final profile = profileController.profile.value;
+          
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // Profile Picture and Basic Info
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(20.sp),
+                  margin: EdgeInsets.symmetric(horizontal: 20.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50.sp,
+                        backgroundImage: profile?.image != null 
+                            ? NetworkImage(profile!.image!) as ImageProvider
+                            : AssetImage('assets/profile.png'),
+                      ),
+                      SizedBox(height: 15.h),
+                      Text(
+                        profile != null 
+                            ? '${profile.firstName} ${profile.lastName}'
+                            : 'User name',
+                        style: TextStyle(
+                            color: Color(0xffFFFFFF),
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        authController.isAdmin.value ? 'Admin' : 'Student',
+                        style: TextStyle(
+                            color: Color(0xff8E8E93),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
+
+                SizedBox(height: 20.h),
+
+                // Details Container
+                Container(
+                  padding: EdgeInsets.all(20.sp),
+                  margin: EdgeInsets.symmetric(horizontal: 20.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildProfileItem(Icons.school, 'Semester', '${profile?.semester ?? 'N/A'}${_getOrdinal(profile?.semester)} Semester'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.numbers_outlined, 'Roll Number', profile?.rollNo ?? 'N/A'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.calendar_today, 'Date of Birth', profile?.dob ?? 'N/A'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.email, 'Email', '${profile?.firstName.toLowerCase() ?? 'user'}@gmail.com'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.book, 'Program', 'BIT'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.schedule, 'Shift', '${profile?.shift ?? 'N/A'} Shift'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.location_on, 'Address', profile?.address ?? 'N/A'),
+                      _buildDivider(),
+                      _buildProfileItem(Icons.phone, 'Contact Number', '9841XXXXXX'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
+  }
+
+  Widget _buildProfileItem(IconData icon, String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 12.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            color: Color(0xffFFFFFF),
+            size: 22.sp,
+          ),
+          SizedBox(width: 15.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Color(0xff8E8E93),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: Color(0xffFFFFFF),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Divider(
+      color: Colors.grey.withOpacity(0.3),
+      height: 1.h,
+    );
+  }
+
+  String _getOrdinal(int? semester) {
+    if (semester == null) return '';
+    switch (semester) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
   }
 }

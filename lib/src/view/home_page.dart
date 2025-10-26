@@ -6,6 +6,7 @@ import 'package:campus_connect/src/view/bottom_nav.dart';
 import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:campus_connect/src/view/notice_details.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
+import 'package:campus_connect/src/view/user_list.dart';
 import 'package:campus_connect/src/widgets/custom_alerts.dart';
 import 'package:campus_connect/src/widgets/notice_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,13 +55,19 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                Get.to(() => ProfilePage());
-              },
-              icon: Icon(
-                Icons.person,
-                color: Color(0xffFFFFFF),
-              ))
+            onPressed: () {
+              final AuthController authController = Get.find<AuthController>();
+              if (authController.isAdmin.value) {
+                Get.to(() => UsersPage()); // Navigate to Users list for admin
+              } else {
+                Get.to(() => ProfilePage()); // Navigate to Profile for students
+              }
+            },
+            icon: Icon(
+              Icons.person,
+              color: Color(0xffFFFFFF),
+            ),
+          )
         ],
       ),
 
