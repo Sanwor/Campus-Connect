@@ -28,7 +28,7 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.169:5000/query/'),
+        Uri.parse('http://192.168.101.10:5000/query/'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'question': question}),
       );
