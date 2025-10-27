@@ -35,8 +35,9 @@ class AuthController extends GetxController {
   // }
 
   // Login
-  Future<void> login({required String email, required String password}) async {
-    isLoginLoading.value = true;
+  Future<void> login({ 
+    required String email, required String password, }) async {
+     isLoginLoading.value = true;
 
     ///old function for auth
     // var data = {
@@ -46,44 +47,47 @@ class AuthController extends GetxController {
     // };
 
     try {
-      // var response = await ApiRepo.apiPost("auth/login/", data);
-      final response = await _authService.login(email, password);
-      
-      if (response.statusCode == 200 || response.statusCode == 201 ) {
-        // Store tokens
-        write("access_token", response.data["access"] ?? "");
-        write("refresh_token", response.data["refresh"] ?? "");
+    // Get FCM token first
+    final fcmToken = await NotificationService.getFcmToken();
+    log(" FCM Token: $fcmToken");
 
-        // DEBUG: Print the entire response to see available fields
-        log('🔍 LOGIN RESPONSE DATA: ${response.data}');
-        log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
-        
-        // Extract username from message
-        String message = response.data["message"] ?? "";
+    // Prepare data
+    final response = await _authService.login(email, password, fcmToken);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Store tokens
+      write("access_token", response.data["access"] ?? "");
+      write("refresh_token", response.data["refresh"] ?? "");
+
+      log('🔍 LOGIN RESPONSE DATA: ${response.data}');
+      log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
+
+      // Extract username
+      String message = response.data["message"] ?? "";
       if (message.contains("Welcome back,")) {
-        String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
+        String username =
+            message.split("Welcome back,")[1].replaceFirst(".", "").trim();
         write("userName", username);
-        this.username.value = username; // Also store in controller
+        this.username.value = username;
       }
 
-      /// Extract and save user role (admin or not)
+      // Extract and save admin role
       bool isAdminUser = _checkIfAdmin(response.data);
       log('🔍 IS ADMIN RESULT: $isAdminUser');
       write("isAdmin", isAdminUser.toString());
-        
-        showToast("Login successful!");
-        Get.offAll(() => BottomNavPage(initialIndex: 0));
-      } else {
-        // Handle error response
-        String errorMessage = response.data["message"] ?? "Login failed";
-        showErrorToast(errorMessage);
-      }
-    } catch (e) {
-      log(e.toString());
-      showToast(e.toString());
-    } finally {
-      isLoginLoading.value = false;
+
+      showToast("Login successful!");
+      Get.offAll(() => BottomNavPage(initialIndex: 0));
+    } else {
+      String errorMessage = response.data["message"] ?? "Login failed";
+      showErrorToast(errorMessage);
     }
+  } catch (e) {
+    log("Login error: $e");
+    showToast(e.toString());
+  } finally {
+    isLoginLoading.value = false;
+  }
   }
 
   // Register

@@ -5,12 +5,17 @@ class AuthService {
 
   AuthService(this._dio);
 
-  Future<Response> login(String email, String password) async {
-    return await _dio.post('auth/login/', data: {
-      'email': email,
-      'password': password,
-    });
+  Future<Response> login(String email, String password, String deviceToken) async {
+    return await _dio.post(
+      'auth/login/',
+      data: {
+        'email': email,
+        'password': password,
+        'device_token': deviceToken,
+      },
+    );
   }
+
 
   Future<Response> register(FormData formData) async {
     return await _dio.post(
