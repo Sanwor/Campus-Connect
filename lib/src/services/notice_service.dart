@@ -40,9 +40,9 @@ Future<Response> updateNotice(int id, FormData formData) async {
   Map<String, dynamic> jsonData = {};
   
   // Extract data from FormData for testing
-  formData.fields.forEach((field) {
+  for (var field in formData.fields) {
     jsonData[field.key] = field.value;
-  });
+  }
   
   // Try with JSON first
   try {

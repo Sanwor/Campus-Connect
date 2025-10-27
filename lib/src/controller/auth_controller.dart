@@ -5,8 +5,8 @@ import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
-import 'package:campus_connect/src/view/bottom_nav.dart';
-import 'package:campus_connect/src/view/login_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
+import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -16,7 +16,6 @@ class AuthController extends GetxController {
   RxBool isLoginLoading = false.obs;
   RxBool isRegisterLoading = false.obs;
   var username = ''.obs;
-  RxBool isAdmin = false.obs; 
 
 
   // Future<void> login(String email, String password) async {
@@ -71,7 +70,6 @@ class AuthController extends GetxController {
       bool isAdminUser = _checkIfAdmin(response.data);
       log('🔍 IS ADMIN RESULT: $isAdminUser');
       write("isAdmin", isAdminUser.toString());
-      isAdmin.value = isAdminUser;
         
         showToast("Login successful!");
         Get.offAll(() => BottomNavPage(initialIndex: 0));
@@ -175,12 +173,9 @@ class AuthController extends GetxController {
 
     // Add logout method to clear admin status
   void logout() {
-    write("access_token", "");
-    write("refresh_token", "");
-    write("userName", "");
-    write("isAdmin", "false");
     username.value = '';
-    isAdmin.value = false;
+
+    clearAllData();
 
     // Clear profile data
     final ProfileController profileController = Get.find<ProfileController>();

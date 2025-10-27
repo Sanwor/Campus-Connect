@@ -1,8 +1,9 @@
 import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/chat_controller.dart';
 import 'package:campus_connect/src/controller/notice_controller.dart';
+import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/model/class_schedule.dart';
-import 'package:campus_connect/src/view/bottom_nav.dart';
+import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
 import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:campus_connect/src/view/notice_details.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
@@ -13,9 +14,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+import '../../app_utils/read_write.dart';
 
 class HomePage extends StatefulWidget {
   final AuthController authController = Get.find<AuthController>();
+  final ProfileController profController = Get.find<ProfileController>();
   HomePage({super.key});
 
   @override
@@ -28,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   bool isViewAll = false;
   final user = FirebaseAuth.instance.currentUser!;
   final String today = getTodayName();
+  
 
   @override
   void initState() {
@@ -37,10 +43,12 @@ class _HomePageState extends State<HomePage> {
 
   initialise() {
     noticeCon.getNoticeList();
+    widget.profController.getProfile();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
@@ -55,19 +63,18 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              final AuthController authController = Get.find<AuthController>();
-              if (authController.isAdmin.value) {
-                Get.to(() => UsersPage()); // Navigate to Users list for admin
-              } else {
-                Get.to(() => ProfilePage()); // Navigate to Profile for students
-              }
-            },
-            icon: Icon(
-              Icons.person,
-              color: Color(0xffFFFFFF),
+              onPressed: () {
+                if (read("isAdmin") == "true" ) {
+                  Get.to(() => UsersPage()); // Navigate to Users list for admin
+                } else {
+                  Get.to(() => ProfilePage()); // Navigate to Profile for students
+                }
+              },
+              icon: Icon(
+                Icons.person,
+                color: Color(0xffFFFFFF),
+              ),
             ),
-          )
         ],
       ),
 
@@ -109,28 +116,34 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Welcome! \n${widget.authController.username.value.isNotEmpty ? widget.authController.username.value : "Admin"}.',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            color: Color(0xffFFFFFF),
-                            fontSize: 30.sp,
-                            fontWeight: FontWeight.w700),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
+                  Obx((){
+                    final profile = widget.profController.profile.value;
+                    final fullName = "${profile?.firstName ?? ''} ${profile?.lastName ?? ''}".trim();
+                    return Row(
+                      children: [
+                        Text(
+                          'Welcome! \n${read("isAdmin") != "true" ? fullName : "Admin"}.',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Color(0xffFFFFFF),
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.w700),
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
+                    );
+                  } 
                   ),
                   SizedBox(height: 20.h),
-                  Text(
-                    "$today's Schedule:",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xffFFFFFF)),
-                  ),
+                  //shows today's day (might not need this)
+                  // Text(
+                  //   "$today's Schedule:",
+                  //   style: TextStyle(
+                  //       fontSize: 16.sp,
+                  //       fontWeight: FontWeight.w600,
+                  //       color: Color(0xffFFFFFF)),
+                  // ),
 
                   SizedBox(height: 10.h),
 
@@ -144,40 +157,107 @@ class _HomePageState extends State<HomePage> {
                   //   textAlign: TextAlign.left,
                   // ),
                   Center(
-                    child: schedule.containsKey(today)
-                        ? Table(
-                            columnWidths: {
-                              0: FlexColumnWidth(2),
-                              1: FlexColumnWidth(3),
-                            },
-                            border: TableBorder.all(color: Color(0xffFFFFFF)),
-                            children: schedule[today]!.map((entry) {
-                              return TableRow(children: [
+                    child: schedule.containsKey(getTodayName())
+                        ? Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(20.sp),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.r),
+                              color: Colors.white.withValues(alpha: 0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Date Header
                                 Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.only(bottom: 16.h),
                                   child: Text(
-                                    entry['time']!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Color(0xffFFFFFF)),
+                                    '${getTodayName()}, ${DateFormat('MMMM d').format(DateTime.now())}',
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.9),
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    entry['subject']!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Color(0xffFFFFFF)),
-                                  ),
-                                ),
-                              ]);
-                            }).toList(),
+
+                                // Schedule Items
+                                ...schedule[getTodayName()]!.asMap().entries.map((entry) {
+                                  final item = entry.value;
+                                  final isLast = entry.key ==
+                                      schedule[getTodayName()]!.length - 1;
+
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 10.h),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            // Time
+                                            SizedBox(
+                                              width: 120.w,
+                                              child: Text(
+                                                item['time']!,
+                                                style: TextStyle(
+                                                  color: Colors.white.withValues(alpha: 0.8),
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+
+                                            // Subject
+                                            Expanded(
+                                              child: Text(
+                                                item['subject']!,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // Divider (except last item)
+                                      if (!isLast)
+                                        Divider(
+                                          color: Colors.white.withValues(alpha: 0.2),
+                                          thickness: 1,
+                                          height: 4.h,
+                                        ),
+                                    ],
+                                  );
+                                }),
+                              ],
+                            ),
                           )
-                        : Text(
-                            'No class schedule for today.',
-                            style: TextStyle(color: Colors.white),
+                        : Container(
+                            padding: EdgeInsets.all(20.sp),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.r),
+                              color: Color(0xff1E3D7A).withValues(alpha: 0.9),
+                            ),
+                            child: Text(
+                              'No class schedule for today.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                   ),
-
                   SizedBox(height: 20.h),
 
                   Text(

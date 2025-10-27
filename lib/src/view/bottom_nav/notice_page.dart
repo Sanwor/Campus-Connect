@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../app_utils/read_write.dart';
+
 class NoticePage extends StatefulWidget {
   final AuthController authController = Get.find<AuthController>();
   NoticePage({super.key});
@@ -43,19 +45,17 @@ class _NoticePageState extends State<NoticePage> {
               color: Color(0xffFFFFFF)),
         ),
         actions: [
-          Obx(
-            ()=> widget.authController.isAdmin.value
-              ?IconButton(
-                onPressed: () {
-                  Get.to(() => CreateNotice(
-                        isUpdate: false,
-                      ));
-                },
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                )): SizedBox(width: 40.w), // Empty space to maintain layout,
-          )
+          read("isAdmin") == "true" 
+            ?IconButton(
+            onPressed: () {
+              Get.to(() => CreateNotice(
+                    isUpdate: false,
+                  ));
+            },
+            icon: Icon(
+              Icons.add,
+              color: Colors.white,
+            )): SizedBox(width: 40.w), 
         ],
       ),
       body: Obx(

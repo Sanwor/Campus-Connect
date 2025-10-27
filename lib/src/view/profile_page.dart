@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../app_utils/read_write.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -81,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: [
                       CircleAvatar(
-                        radius: 50.sp,
+                        radius: 50.r,
                         backgroundImage: profile?.image != null 
                             ? NetworkImage(profile!.image!) as ImageProvider
                             : AssetImage('assets/profile.png'),
@@ -98,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(height: 5.h),
                       Text(
-                        authController.isAdmin.value ? 'Admin' : 'Student',
+                        read("isAdmin") == "true"  ? 'Admin' : 'Student',
                         style: TextStyle(
                             color: Color(0xff8E8E93),
                             fontSize: 16.sp,
@@ -138,6 +140,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
+
+                SizedBox(height: 20.h)
               ],
             ),
           );
@@ -189,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildDivider() {
     return Divider(
-      color: Colors.grey.withOpacity(0.3),
+      color: Colors.grey.withValues(alpha:0.3),
       height: 1.h,
     );
   }

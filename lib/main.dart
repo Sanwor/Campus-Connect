@@ -4,10 +4,12 @@ import 'package:campus_connect/src/app_config/constant.dart';
 import 'package:campus_connect/src/app_config/dio_interceptor.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
+import 'package:campus_connect/src/controller/user_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/services/profile_services.dart';
+import 'package:campus_connect/src/services/user_service.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -58,6 +60,9 @@ final dio = Dio(
   Get.put<AuthController>(AuthController());
   Get.put<ProfileService>(ProfileService(dio));
   Get.put<ProfileController>(ProfileController());
+
+  Get.put(UserService(Get.find<Dio>()));
+  Get.put(UserController());
   
   runApp(const MyWidget());
 }

@@ -1,8 +1,8 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
-import 'package:campus_connect/src/view/bottom_nav.dart';
-import 'package:campus_connect/src/view/register_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
+import 'package:campus_connect/src/view/auth/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

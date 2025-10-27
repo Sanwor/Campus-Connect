@@ -6,6 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../app_utils/read_write.dart';
+
 class NoticeContainer extends StatefulWidget {
   final String title;
   final String dateTime;
@@ -74,8 +76,7 @@ class _NoticeContainerState extends State<NoticeContainer> {
                     ],
                   ),
                 ),
-                Obx(
-                  ()=>widget.authController.isAdmin.value
+                read("isAdmin") == "true" 
                   ? PopupMenuButton(
                     color: Colors.white,
                     onSelected: widget.onTapMenu,
@@ -111,8 +112,7 @@ class _NoticeContainerState extends State<NoticeContainer> {
                         ),
                       )
                     ],
-                  ): SizedBox(width: 40.w), // Empty space to maintain layout,
-                ),
+                  ): SizedBox(width: 40.w), 
               ]),
             ),
           ),

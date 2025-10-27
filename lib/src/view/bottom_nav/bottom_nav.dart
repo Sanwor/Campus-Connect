@@ -1,7 +1,7 @@
-import 'package:campus_connect/src/view/home_page.dart';
-import 'package:campus_connect/src/view/notice_page.dart';
-import 'package:campus_connect/src/view/routine_page.dart';
-import 'package:campus_connect/src/view/settings_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/home_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/notice_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/routine_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -21,7 +21,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
     HomePage(),
     NoticePage(),
     RoutinePage(),
-    SettingsPage(),
+    MenuPage(),
   ];
 
   @override
@@ -80,7 +80,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'assets/settings.svg',
+                'assets/menu.svg',
                 colorFilter: ColorFilter.mode(
                     index == 3 ? Color(0xffD73800) : Color(0xffFFFFFF),
                     BlendMode.srcIn),

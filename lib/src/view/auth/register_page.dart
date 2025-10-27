@@ -246,7 +246,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(color: Colors.white, width: 2),
-                                            color: Colors.grey.withOpacity(0.3),
+                                            color: Colors.grey.withValues(alpha:0.3),
                                           ),
                                           child: Icon(
                                             Icons.person,

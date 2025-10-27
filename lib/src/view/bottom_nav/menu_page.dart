@@ -1,19 +1,31 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
-import 'package:campus_connect/src/view/login_page.dart';
+import 'package:campus_connect/src/controller/profile_controller.dart';
+import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+class MenuPage extends StatefulWidget {
+  final ProfileController profController = Get.find<ProfileController>();
+  MenuPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<MenuPage> createState() => _MenuPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _MenuPageState extends State<MenuPage> {
+  @override
+  void initState() {
+    super.initState();
+    initialise();
+  }
+
+  initialise() {
+    widget.profController.getProfile();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,40 +57,49 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           children: [
             //profile and name
-            Padding(
-              padding: EdgeInsets.only(left: 40.sp),
-              child: SizedBox(
-                height: 100.h,
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 40.sp,
-                      backgroundImage: AssetImage('assets/profile.png'),
-                    ),
-                    SizedBox(width: 20.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'User name',
-                          style: TextStyle(
-                              color: Color(0xffFFFFFF),
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        Text(
-                          'role',
-                          style: TextStyle(
-                              color: Color(0xff8E8E93),
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    )
-                  ],
+            Obx(
+              (){
+                final profile = widget.profController.profile.value;
+                final fullName = "${profile?.firstName ?? ''} ${profile?.lastName ?? ''}".trim();
+                return Padding(
+                padding: EdgeInsets.only(left: 40.sp),
+                child: SizedBox(
+                  height: 100.h,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 40.sp,
+                        backgroundImage: read("isAdmin") == "true" ? AssetImage('assets/profile.png')
+                        :profile?.image != null 
+                            ? NetworkImage(profile!.image!) as ImageProvider
+                            : AssetImage('assets/profile.png'),
+                      ),
+                      SizedBox(width: 20.w),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            read("isAdmin") != "true" ? fullName : "Admin",
+                            style: TextStyle(
+                                color: Color(0xffFFFFFF),
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            read("isAdmin") != "true" ? "Student" : "Admin",
+                            style: TextStyle(
+                                color: Color(0xff8E8E93),
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
+              );
+              }
             ),
 
             Divider(
@@ -98,7 +119,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () => Get.to(() => ProfilePage()),
                       child: SizedBox(
                         width: 300.w,
-                        height: 50.w,
+                        height: 50.h,
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -123,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () => Get.to(() => ProfilePage()),
                       child: SizedBox(
                         width: 300.w,
-                        height: 50.w,
+                        height: 50.h,
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -148,7 +169,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () => Get.to(() => ProfilePage()),
                       child: SizedBox(
                         width: 300.w,
-                        height: 50.w,
+                        height: 50.h,
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -177,7 +198,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       child: SizedBox(
                         width: 300.w,
-                        height: 50.w,
+                        height: 50.h,
                         child: Row(
                           children: [
                             SvgPicture.asset('assets/logout.svg',

@@ -1,6 +1,6 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
-import 'package:campus_connect/src/view/bottom_nav.dart';
-import 'package:campus_connect/src/view/login_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
+import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
