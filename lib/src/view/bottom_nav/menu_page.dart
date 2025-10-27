@@ -34,7 +34,7 @@ class _MenuPageState extends State<MenuPage> {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text(
-          'Settings',
+          'Menu',
           style: TextStyle(
               fontSize: 22.sp,
               fontWeight: FontWeight.w700,

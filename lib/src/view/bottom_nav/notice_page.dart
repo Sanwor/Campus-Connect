@@ -20,6 +20,8 @@ class NoticePage extends StatefulWidget {
 
 class _NoticePageState extends State<NoticePage> {
   final NoticeController noticeCon = Get.put(NoticeController());
+  TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,10 @@ class _NoticePageState extends State<NoticePage> {
 
   initialise() async {
     await noticeCon.getNoticeList();
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {});
   }
 
   @override
@@ -92,69 +98,84 @@ class _NoticePageState extends State<NoticePage> {
                             )))
                         : Column(
                             children: [
+
+                              // Search bar
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10.h),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: TextField(
+                                    controller: searchController,
+                                    onChanged: _onSearchChanged,
+                                    decoration: InputDecoration(
+                                      hintText: "Search notices...",
+                                      hintStyle: TextStyle(
+                                        color: Colors.white
+                                      ),
+                                      prefixIcon: const Icon(Icons.search),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10.r),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+
                               // List of notices
                               if (noticeCon.noticeList.isNotEmpty)
-                                Flexible(
-                                  fit: FlexFit.loose,
-                                  child: ListView.separated(
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(height: 10.h),
-                                    padding: EdgeInsets.only(
-                                        top: 20.h, bottom: 30.h),
-                                    shrinkWrap: true,
-                                    physics: BouncingScrollPhysics(),
-                                    itemCount: noticeCon.noticeList.length,
-                                    itemBuilder: (context, index) {
-                                      final notice =
-                                          noticeCon.noticeList[index];
-                                      return ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(16.r),
-                                        child: NoticeContainer(
-                                          title: notice.title.toString(),
-                                          dateTime:
-                                              notice.publishedAt.toString(),
-                                          onTap: () =>
-                                              Get.to(() => NoticeDetails(
-                                                    noticeid: noticeCon
-                                                        .noticeList[index].id,
-                                                  )),
-                                          onTapMenu: (value) async {
-                                            if (value == 'delete') {
-                                              showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return CustomAlert(
-                                                      title: 'Delete',
-                                                      content:
-                                                          'Do you want to delete this company?',
-                                                      onTap: () async {
-                                                        noticeCon.deleteNotice(
-                                                            noticeCon
-                                                                .noticeList[
-                                                                    index]
-                                                                .id);
-                                                        Get.back();
-                                                        noticeCon
-                                                            .getNoticeList();
-                                                      },
-                                                    );
-                                                  });
-                                            }
-                                            //for update
-                                            else {
-                                              Get.to(() => CreateNotice(
-                                                    isUpdate: true,
-                                                    noticeid: noticeCon
-                                                        .noticeList[index].id,
-                                                  ));
-                                            }
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                ListView.separated(
+                                  separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                                  padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: noticeCon.noticeList.length,
+                                  itemBuilder: (context, index) {
+                                    final notice = noticeCon.noticeList[index];
+                                    final query = searchController.text.trim().toLowerCase();
+                                    final matches = query.isEmpty ||
+                                    (notice.title?.toLowerCase().contains(query) ?? false);
+                                
+                                    if (!matches) {
+                                      return SizedBox.shrink(); // hide non-matching items
+                                    }
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      child: NoticeContainer(
+                                        title: notice.title.toString(),
+                                        dateTime: notice.publishedAt.toString(),
+                                        onTap: () =>
+                                          Get.to(() => NoticeDetails(
+                                            noticeid: noticeCon.noticeList[index].id,
+                                          )),
+                                        onTapMenu: (value) async {
+                                          if (value == 'delete') {
+                                            showDialog(
+                                                context: context,
+                                                builder:(BuildContext context) {
+                                                  return CustomAlert(
+                                                    title: 'Delete',
+                                                    content: 'Do you want to delete this notice?',
+                                                    onTap: () async {
+                                                      noticeCon.deleteNotice(noticeCon.noticeList[index].id);
+                                                      Get.back();
+                                                      noticeCon.getNoticeList();
+                                                    },
+                                                  );
+                                                });
+                                          }
+                                          //for update
+                                          else {
+                                            Get.to(() => CreateNotice(
+                                                  isUpdate: true,
+                                                  noticeid: noticeCon
+                                                      .noticeList[index].id,
+                                                ));
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                             ],
                           )),

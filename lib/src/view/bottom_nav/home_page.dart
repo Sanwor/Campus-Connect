@@ -260,16 +260,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20.h),
 
-                  Text(
-                    'Recent Notices',
-                    style: TextStyle(
+                  Row(
+                    children: [
+                      Text(
+                        'Recent Notices',
+                        style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: Color(0xffFFFFFF)),
-                  ),
-
-                  Row(
-                    children: [
+                      ),
                       Spacer(),
 
                       // View All button
