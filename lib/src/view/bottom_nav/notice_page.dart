@@ -107,12 +107,15 @@ class _NoticePageState extends State<NoticePage> {
                                   child: TextField(
                                     controller: searchController,
                                     onChanged: _onSearchChanged,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
                                     decoration: InputDecoration(
                                       hintText: "Search notices...",
                                       hintStyle: TextStyle(
                                         color: Colors.white
                                       ),
-                                      prefixIcon: const Icon(Icons.search),
+                                      prefixIcon: const Icon(Icons.search, color: Color(0xffFFFFFF),),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10.r),
                                       ),
