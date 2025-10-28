@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:campus_connect/src/app_config/api_repo.dart';
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
@@ -9,7 +7,7 @@ import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
 import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide FormData, MultipartFile;
+import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 
 class AuthController extends GetxController {
   final AuthService _authService = Get.find();
@@ -17,80 +15,102 @@ class AuthController extends GetxController {
   RxBool isRegisterLoading = false.obs;
   var username = ''.obs;
 
-
-  // Future<void> login(String email, String password) async {
-  //   try {
-  //     isLoginLoading.value = true;
-
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
-
-  //   } catch (e) {
-  //     Get.snackbar("Login Failed", e.toString());
-  //   } finally {
-  //     isLoginLoading.value = false;
-  //   }
-  // }
-
-  // Login
-  Future<void> login({ 
-    required String email, required String password, }) async {
-     isLoginLoading.value = true;
-
-    ///old function for auth
-    // var data = {
-    //   "email": email,
-    //   "password": password,
-    //   // "fcm_token" : await NotificationService.getFcmToken()
-    // };
-
+  // Add refresh token method
+  Future<bool> refreshAuthToken() async {
     try {
-    // Get FCM token first
-    final fcmToken = await NotificationService.getFcmToken();
-    log(" FCM Token: $fcmToken");
-
-    // Prepare data
-    final response = await _authService.login(email, password, fcmToken);
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      // Store tokens
-      write("access_token", response.data["access"] ?? "");
-      write("refresh_token", response.data["refresh"] ?? "");
-
-      log('🔍 LOGIN RESPONSE DATA: ${response.data}');
-      log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
-
-      // Extract username
-      String message = response.data["message"] ?? "";
-      if (message.contains("Welcome back,")) {
-        String username =
-            message.split("Welcome back,")[1].replaceFirst(".", "").trim();
-        write("userName", username);
-        this.username.value = username;
+      String? refreshToken = read("refresh_token");
+      if (refreshToken == null || refreshToken.isEmpty) {
+        return false;
       }
 
-      // Extract and save admin role
-      bool isAdminUser = _checkIfAdmin(response.data);
-      log('🔍 IS ADMIN RESULT: $isAdminUser');
-      write("isAdmin", isAdminUser.toString());
-
-      showToast("Login successful!");
-      Get.offAll(() => BottomNavPage(initialIndex: 0));
-    } else {
-      String errorMessage = response.data["message"] ?? "Login failed";
-      showErrorToast(errorMessage);
+      final response = await _authService.refreshToken(refreshToken);
+      
+      if (response.statusCode == 200) {
+        write("access_token", response.data["access"] ?? "");
+        // Update refresh token if a new one is provided
+        if (response.data["refresh"] != null) {
+          write("refresh_token", response.data["refresh"]);
+        }
+        log('✅ Token refreshed successfully');
+        return true;
+      }
+    } catch (e) {
+      log('❌ Token refresh failed: $e');
     }
-  } catch (e) {
-    log("Login error: $e");
-    showToast(e.toString());
-  } finally {
-    isLoginLoading.value = false;
-  }
+    return false;
   }
 
-  // Register
+  // Updated login method with FCM token
+  Future<void> login({ 
+    required String email, 
+    required String password, 
+  }) async {
+    isLoginLoading.value = true;
+
+    try {
+      // Get FCM token first with error handling
+      String? fcmToken;
+      try {
+        fcmToken = await NotificationService.getFcmToken();
+        log("📱 FCM Token: $fcmToken");
+      } catch (e) {
+        log("⚠️ Could not get FCM token: $e");
+        fcmToken = null;
+      }
+
+      final response = await _authService.login(email, password, fcmToken);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        write("access_token", response.data["access"] ?? "");
+        write("refresh_token", response.data["refresh"] ?? "");
+
+        log('🔍 LOGIN RESPONSE DATA: ${response.data}');
+        log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
+
+        String message = response.data["message"] ?? "";
+        if (message.contains("Welcome back,")) {
+          String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
+          write("userName", username);
+          this.username.value = username;
+        }
+
+        bool isAdminUser = _checkIfAdmin(response.data);
+        log('🔍 IS ADMIN RESULT: $isAdminUser');
+        write("isAdmin", isAdminUser.toString());
+
+        showToast("Login successful!");
+        Get.offAll(() => BottomNavPage(initialIndex: 0));
+      } else {
+        String errorMessage = response.data["message"] ?? "Login failed";
+        showErrorToast(errorMessage);
+      }
+    } catch (e) {
+      log("💥 Login error: $e");
+      if (e is DioException) {
+        if (e.response != null) {
+          log('Server response: ${e.response!.data}');
+          log('Status code: ${e.response!.statusCode}');
+          
+          if (e.response!.statusCode == 500) {
+            showErrorToast("Server error. Please try again.");
+          } else if (e.response!.statusCode == 400) {
+            String errorMsg = e.response!.data["message"] ?? "Invalid email or password";
+            showErrorToast(errorMsg);
+          } else {
+            showErrorToast("Login failed. Please try again.");
+          }
+        } else {
+          showErrorToast("Network error. Check your connection.");
+        }
+      } else {
+        showErrorToast("An unexpected error occurred");
+      }
+    } finally {
+      isLoginLoading.value = false;
+    }
+  }
+
+  // Register method (keep existing)
   Future<void> register({
     required String email,
     required String password,
@@ -99,9 +119,9 @@ class AuthController extends GetxController {
     required String lastName,
     required String rollNo,
     required String semester,
-    required String dob, // Format: YYYY-MM-DD (AD)
+    required String dob,
     required String address,
-    required String shift, // 'morning' or 'day'
+    required String shift,
     String? imagePath,
   }) async {
     isRegisterLoading.value = true;
@@ -124,17 +144,9 @@ class AuthController extends GetxController {
       final response = await _authService.register(data);
       
       if (response.statusCode == 201 || response.statusCode == 200) {
-        // Registration successful
         Get.snackbar('Success', 'Registration successful!');
-        
-        // Navigate to login page
         Get.offAll(() => LoginPage());
-        
-        // Optionally auto-login after registration
-        // Get.offAllNamed('/home');
-        
       } else if (response.statusCode == 400) {
-        // Handle validation errors
         String errorMessage = "Registration failed";
         if (response.data["detail"] != null) {
           errorMessage = response.data["detail"];
@@ -157,34 +169,26 @@ class AuthController extends GetxController {
     }
   }
 
-    // Method to determine if user is admin
-      bool _checkIfAdmin(Map<String, dynamic> responseData) {
-      // Extract username from the welcome message
-      String message = responseData["message"] ?? "";
-      
-      if (message.contains("Welcome back,")) {
-        String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
-        
-        // Simple check - if username is "Admin" (exactly as in your message)
-        bool isAdminUser = username == "Admin";
-        
-        log('🔍 ADMIN CHECK - Username: "$username", Is Admin: $isAdminUser');
-        return isAdminUser;
-      }
-      
-      return false;
+  // Method to determine if user is admin
+  bool _checkIfAdmin(Map<String, dynamic> responseData) {
+    String message = responseData["message"] ?? "";
+    
+    if (message.contains("Welcome back,")) {
+      String username = message.split("Welcome back,")[1].replaceFirst(".", "").trim();
+      bool isAdminUser = username == "Admin";
+      log('🔍 ADMIN CHECK - Username: "$username", Is Admin: $isAdminUser');
+      return isAdminUser;
     }
+    
+    return false;
+  }
 
-    // Add logout method to clear admin status
+  // Logout method
   void logout() {
     username.value = '';
-
     clearAllData();
-
-    // Clear profile data
     final ProfileController profileController = Get.find<ProfileController>();
     profileController.profile.value = null;
-    
     Get.offAllNamed('login/');
   }
-  }
+}

@@ -5,14 +5,20 @@ class AuthService {
 
   AuthService(this._dio);
 
-  Future<Response> login(String email, String password, String deviceToken) async {
+  Future<Response> login(String email, String password, String? fcmToken) async {
+    var data = {
+      "email": email,
+      "password": password,
+    };
+    
+    // Add FCM token only if it's not null and not empty
+    if (fcmToken != null && fcmToken.isNotEmpty) {
+      data["fcm_token"] = fcmToken;
+    }
+
     return await _dio.post(
       'auth/login/',
-      data: {
-        'email': email,
-        'password': password,
-        'device_token': deviceToken,
-      },
+      data: data,
     );
   }
 
@@ -29,6 +35,7 @@ class AuthService {
     );
   }
 
+  //refresh token
   Future<Response> refreshToken(String refreshToken) async {
     return await _dio.post('auth/refresh/', data: {
       'refresh_token': refreshToken,

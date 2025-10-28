@@ -7,7 +7,6 @@ import 'package:campus_connect/src/widgets/notice_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 import '../../app_utils/read_write.dart';
 
 class NoticePage extends StatefulWidget {
@@ -20,7 +19,7 @@ class NoticePage extends StatefulWidget {
 
 class _NoticePageState extends State<NoticePage> {
   final NoticeController noticeCon = Get.put(NoticeController());
-  TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -39,149 +38,149 @@ class _NoticePageState extends State<NoticePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      // Remove extendBodyBehindAppBar to prevent scroll overlap
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xff020826),
         centerTitle: true,
         title: Text(
           'Notices',
           style: TextStyle(
-              fontSize: 22.sp,
-              fontWeight: FontWeight.w700,
-              color: Color(0xffFFFFFF)),
+            fontSize: 22.sp,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
         actions: [
-          read("isAdmin") == "true" 
-            ?IconButton(
-            onPressed: () {
-              Get.to(() => CreateNotice(
-                    isUpdate: false,
-                  ));
-            },
-            icon: Icon(
-              Icons.add,
-              color: Colors.white,
-            )): SizedBox(width: 40.w), 
+          read("isAdmin") == "true"
+              ? IconButton(
+                  onPressed: () {
+                    Get.to(() => CreateNotice(isUpdate: false));
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white),
+                )
+              : SizedBox(width: 40.w),
         ],
       ),
-      body: Obx(
-        () => RefreshIndicator(
-          onRefresh: () {
-            return noticeCon.getNoticeList();
-          },
-          child: SingleChildScrollView(
-            child: Container(
-                padding: EdgeInsets.only(top: 120.sp, left: 30.w, right: 30.w),
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xff020826),
-                        Color(0xff204486),
-                      ]),
-                ),
-                child: noticeCon.isNoticeLoading.isTrue
-                    ? Padding(
-                        padding: EdgeInsets.all(16.0.sp),
-                        child: Center(child: CircularProgressIndicator()),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xff020826), Color(0xff204486)],
+          ),
+        ),
+        child: Obx(
+          () => RefreshIndicator(
+            onRefresh: () => noticeCon.getNoticeList(),
+            child: noticeCon.isNoticeLoading.isTrue
+                ? Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.sp),
+                      child: const CircularProgressIndicator(),
+                    ),
+                  )
+                : noticeCon.noticeList.isEmpty
+                    ? Center(
+                        child: Text(
+                          "Notice List is Empty",
+                          style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                        ),
                       )
-                    : noticeCon.noticeList.isEmpty
-                        ? Padding(
-                            padding: EdgeInsets.all(16.0.sp),
-                            child: Center(
-                                child: Text(
-                              "Notice List is Empty",
-                              style: TextStyle(color: Colors.white),
-                            )))
-                        : Column(
-                            children: [
-
-                              // Search bar
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10.h),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: TextField(
-                                    controller: searchController,
-                                    onChanged: _onSearchChanged,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Search notices...",
-                                      hintStyle: TextStyle(
-                                        color: Colors.white
-                                      ),
-                                      prefixIcon: const Icon(Icons.search, color: Color(0xffFFFFFF),),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.r),
-                                      ),
-                                    ),
+                    : SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 30.w, vertical: 20.h),
+                        child: Column(
+                          children: [
+                            // Search Bar
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: TextField(
+                                controller: searchController,
+                                onChanged: _onSearchChanged,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  hintText: "Search notices...",
+                                  hintStyle:
+                                      const TextStyle(color: Colors.white70),
+                                  prefixIcon: const Icon(Icons.search,
+                                      color: Colors.white),
+                                  filled: true,
+                                  fillColor: Colors.white.withValues(alpha: 0.1),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    borderSide: BorderSide.none,
                                   ),
                                 ),
                               ),
+                            ),
 
+                            // Notice List
+                            ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(height: 10.h),
+                              padding: EdgeInsets.only(bottom: 30.h),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: noticeCon.noticeList.length,
+                              itemBuilder: (context, index) {
+                                final notice = noticeCon.noticeList[index];
+                                final query = searchController.text
+                                    .trim()
+                                    .toLowerCase();
+                                final matches = query.isEmpty ||
+                                    (notice.title
+                                            ?.toLowerCase()
+                                            .contains(query) ??
+                                        false);
 
-                              // List of notices
-                              if (noticeCon.noticeList.isNotEmpty)
-                                ListView.separated(
-                                  separatorBuilder: (context, index) => SizedBox(height: 10.h),
-                                  padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: noticeCon.noticeList.length,
-                                  itemBuilder: (context, index) {
-                                    final notice = noticeCon.noticeList[index];
-                                    final query = searchController.text.trim().toLowerCase();
-                                    final matches = query.isEmpty ||
-                                    (notice.title?.toLowerCase().contains(query) ?? false);
-                                
-                                    if (!matches) {
-                                      return SizedBox.shrink(); // hide non-matching items
-                                    }
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(16.r),
-                                      child: NoticeContainer(
-                                        title: notice.title.toString(),
-                                        dateTime: notice.publishedAt.toString(),
-                                        onTap: () =>
-                                          Get.to(() => NoticeDetails(
-                                            noticeid: noticeCon.noticeList[index].id,
-                                          )),
-                                        onTapMenu: (value) async {
-                                          if (value == 'delete') {
-                                            showDialog(
-                                                context: context,
-                                                builder:(BuildContext context) {
-                                                  return CustomAlert(
-                                                    title: 'Delete',
-                                                    content: 'Do you want to delete this notice?',
-                                                    onTap: () async {
-                                                      noticeCon.deleteNotice(noticeCon.noticeList[index].id);
-                                                      Get.back();
-                                                      noticeCon.getNoticeList();
-                                                    },
-                                                  );
-                                                });
-                                          }
-                                          //for update
-                                          else {
-                                            Get.to(() => CreateNotice(
-                                                  isUpdate: true,
-                                                  noticeid: noticeCon
-                                                      .noticeList[index].id,
-                                                ));
-                                          }
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                            ],
-                          )),
+                                if (!matches) return const SizedBox.shrink();
+
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  child: NoticeContainer(
+                                    title: notice.title.toString(),
+                                    dateTime: notice.publishedAt.toString(),
+                                    onTap: () => Get.to(() => NoticeDetails(
+                                          noticeid:
+                                              noticeCon.noticeList[index].id,
+                                        )),
+                                    onTapMenu: (value) async {
+                                      if (value == 'delete') {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return CustomAlert(
+                                              title: 'Delete',
+                                              content:
+                                                  'Do you want to delete this notice?',
+                                              onTap: () async {
+                                                await noticeCon.deleteNotice(
+                                                    noticeCon
+                                                        .noticeList[index].id);
+                                                Get.back();
+                                                noticeCon.getNoticeList();
+                                              },
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        Get.to(() => CreateNotice(
+                                              isUpdate: true,
+                                              noticeid: noticeCon
+                                                  .noticeList[index].id,
+                                            ));
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
           ),
         ),
       ),

@@ -26,6 +26,29 @@ Future<void> backgroundHandler(RemoteMessage message) async{
   debugPrint(message.data.toString());
 }
 
+
+//checks token in startup
+Future<void> checkTokenOnStartup() async {
+  try {
+    final box = GetStorage();
+    
+    String? accessToken = box.read("access_token");
+    String? refreshToken = box.read("refresh_token");
+    
+    log('🔐 Startup Token Check:');
+    log('   Access Token: ${accessToken != null ? "Exists" : "Missing"}');
+    log('   Refresh Token: ${refreshToken != null ? "Exists" : "Missing"}');
+    
+    if (accessToken == null || refreshToken == null) {
+      log('🚫 No tokens found, user needs to login');
+      return;
+    }
+    
+  } catch (e) {
+    log('❌ Startup token check error: $e');
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
@@ -33,8 +56,6 @@ void main() async {
   await NotificationService.initNotification();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
-  // Initialize Dio (add this before runApp)
-  // Update your Dio initialization in main.dart
 final dio = Dio(
   BaseOptions(
     baseUrl: getBaseUrl(),
@@ -63,6 +84,9 @@ final dio = Dio(
 
   Get.put(UserService(Get.find<Dio>()));
   Get.put(UserController());
+
+  //check token
+  await checkTokenOnStartup();
   
   runApp(const MyWidget());
 }
