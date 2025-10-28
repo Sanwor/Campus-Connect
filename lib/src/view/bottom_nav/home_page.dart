@@ -10,7 +10,6 @@ import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:campus_connect/src/view/user_list.dart';
 import 'package:campus_connect/src/widgets/custom_alerts.dart';
 import 'package:campus_connect/src/widgets/notice_container.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -31,7 +30,18 @@ class _HomePageState extends State<HomePage> {
   final NoticeController noticeCon = Get.put(NoticeController());
 
   bool isViewAll = false;
-  final user = FirebaseAuth.instance.currentUser!;
+  String? getCurrentUser() {
+  return read("userName"); 
+}
+
+String? getAccessToken() {
+  return read("access_token");
+}
+
+bool isUserLoggedIn() {
+  final token = read("access_token");
+  return token != null && token.isNotEmpty;
+}
   final String today = getTodayName();
   
 

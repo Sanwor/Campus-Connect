@@ -1,6 +1,7 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/view/auth/login_page.dart';
+import 'package:campus_connect/src/view/event_list.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -115,7 +116,7 @@ class _MenuPageState extends State<MenuPage> {
                 child: Column(
                   children: [
                     //account
-                    GestureDetector(
+                    InkWell(
                       onTap: () => Get.to(() => ProfilePage()),
                       child: SizedBox(
                         width: 300.w,
@@ -140,7 +141,7 @@ class _MenuPageState extends State<MenuPage> {
                     SizedBox(height: 20.h),
 
                     //notification
-                    GestureDetector(
+                    InkWell(
                       onTap: () => Get.to(() => ProfilePage()),
                       child: SizedBox(
                         width: 300.w,
@@ -165,19 +166,17 @@ class _MenuPageState extends State<MenuPage> {
                     SizedBox(height: 20.h),
 
                     //settings
-                    GestureDetector(
-                      onTap: () => Get.to(() => ProfilePage()),
+                    InkWell(
+                      onTap: () => Get.to(() => EventsPage()),
                       child: SizedBox(
                         width: 300.w,
                         height: 50.h,
                         child: Row(
                           children: [
-                            SvgPicture.asset(
-                              'assets/settings.svg',
-                            ),
+                            Icon(Icons.calendar_month_outlined,color: Colors.white,),
                             SizedBox(width: 20.w),
                             Text(
-                              'Settings',
+                              'Events',
                               style: TextStyle(
                                   color: Color(0xffFFFFFF),
                                   fontSize: 16.sp,
@@ -190,7 +189,7 @@ class _MenuPageState extends State<MenuPage> {
                     SizedBox(height: 20.h),
 
                     //logout
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         remove('isLoggedIn');
                         Get.off(() => LoginPage());

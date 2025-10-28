@@ -1,9 +1,6 @@
-import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
-import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
 import 'package:campus_connect/src/view/auth/register_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isObscure = true;
   // final authController = Get.put(AuthController()); //old controller
+  
   // Get the controller
   final AuthController authController = Get.find();
 
@@ -28,17 +26,6 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
-
-    write('isLoggedIn', 'LoggedIn');
-    Get.off(() => BottomNavPage(initialIndex: 0));
-    Get.snackbar('User verified!', 'logged in successfully',
-        animationDuration: Duration(milliseconds: 500),
-        colorText: Color(0xffFFFFFF));
-  }
 
   @override
   void dispose() {

@@ -3,13 +3,16 @@ import 'dart:developer';
 import 'package:campus_connect/src/app_config/constant.dart';
 import 'package:campus_connect/src/app_config/dio_interceptor.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
+import 'package:campus_connect/src/controller/event_controller.dart'; 
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/controller/user_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
+import 'package:campus_connect/src/services/event_services.dart';
 import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/services/profile_services.dart';
 import 'package:campus_connect/src/services/user_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,14 +23,64 @@ import 'package:campus_connect/src/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
-Future<void> backgroundHandler(RemoteMessage message) async{
-  debugPrint(message.data.toString());
+// Fix the background handler - make it a top-level function
+@pragma('vm:entry-point')
+Future<void> backgroundHandler(RemoteMessage message) async {
+  debugPrint("Background message: ${message.data}");
 }
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+  await Firebase.initializeApp();
+  
+  // Initialize notifications with error handling
+  try {
+    await NotificationService.initNotification();
+  } catch (e) {
+    log('Notification initialization error: $e');
+  }
+  
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
-//checks token in startup
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: getBaseUrl(),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+    ),
+  )
+    ..interceptors.add(DioInterceptor())
+    ..interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      logPrint: (object) => log(object.toString()),
+    ));
+
+  // Register instances - ADD EVENT SERVICE HERE
+  Get.put<Dio>(dio);
+  Get.put<AuthService>(AuthService(dio));
+  Get.put<NoticeService>(NoticeService(dio));
+  Get.put<EventService>(EventService(dio)); // ADD THIS LINE
+  Get.put<AuthController>(AuthController());
+  Get.put<ProfileService>(ProfileService(dio));
+  Get.put<ProfileController>(ProfileController());
+  Get.put(UserService(Get.find<Dio>()));
+  Get.put(UserController());
+  Get.put(EventController());
+  
+  // Check token status on app startup
+  await checkTokenOnStartup();
+  
+  runApp(const MyWidget());
+}
+
+// Add this function after your main() function
 Future<void> checkTokenOnStartup() async {
   try {
     final box = GetStorage();
@@ -49,48 +102,6 @@ Future<void> checkTokenOnStartup() async {
   }
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init();
-  await Firebase.initializeApp();
-  await NotificationService.initNotification();
-  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-
-final dio = Dio(
-  BaseOptions(
-    baseUrl: getBaseUrl(),
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
-  ),
-)
-  ..interceptors.add(DioInterceptor())
-  ..interceptors.add(LogInterceptor(
-    request: true,
-    requestHeader: true,
-    requestBody: true,
-    responseHeader: true,
-    responseBody: true,
-    error: true,
-    logPrint: (object) => log(object.toString()),
-  ));
-
-  // Register instances
-  Get.put<Dio>(dio);
-  Get.put<AuthService>(AuthService(dio));
-  Get.put<NoticeService>(NoticeService(dio));
-  Get.put<AuthController>(AuthController());
-  Get.put<ProfileService>(ProfileService(dio));
-  Get.put<ProfileController>(ProfileController());
-
-  Get.put(UserService(Get.find<Dio>()));
-  Get.put(UserController());
-
-  //check token
-  await checkTokenOnStartup();
-  
-  runApp(const MyWidget());
-}
-
 class MyWidget extends StatefulWidget {
   const MyWidget({super.key});
 
@@ -105,6 +116,7 @@ class _MyWidgetState extends State<MyWidget> {
     NotificationService.getPushedNotification(context);
     super.initState();
   }
+  
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -130,6 +142,7 @@ class _MyWidgetState extends State<MyWidget> {
     );
   }
 }
+
 
 //for internet connection check
 class GlobalConnectivityWrapper extends StatefulWidget {
