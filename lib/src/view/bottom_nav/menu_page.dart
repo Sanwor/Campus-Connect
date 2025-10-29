@@ -2,6 +2,7 @@ import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/view/event_list.dart';
+import 'package:campus_connect/src/view/notification_page.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -142,7 +143,7 @@ class _MenuPageState extends State<MenuPage> {
 
                     //notification
                     InkWell(
-                      onTap: () => Get.to(() => ProfilePage()),
+                      onTap: () => Get.to(() => NotificationPage()),
                       child: SizedBox(
                         width: 300.w,
                         height: 50.h,
@@ -165,7 +166,7 @@ class _MenuPageState extends State<MenuPage> {
                     ),
                     SizedBox(height: 20.h),
 
-                    //settings
+                    //events
                     InkWell(
                       onTap: () => Get.to(() => EventsPage()),
                       child: SizedBox(

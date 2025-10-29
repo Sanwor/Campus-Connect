@@ -1,4 +1,4 @@
 // API Base Url
 getBaseUrl() {
-  return "http://192.168.1.23:8000/api/";
+  return "http://192.168.1.36:8000/api/";
 }

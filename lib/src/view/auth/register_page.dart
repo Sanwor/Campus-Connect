@@ -32,6 +32,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _dobController = TextEditingController();
   final _addressController = TextEditingController();
   final _shiftController = TextEditingController();
+  final _progController = TextEditingController();
+  final _contController = TextEditingController();
 
   bool isObscure1 = true;
   bool isObscure2 = true;
@@ -50,6 +52,8 @@ class _RegisterPageState extends State<RegisterPage> {
     _dobController.dispose();
     _addressController.dispose();
     _shiftController.dispose();
+    _contController.dispose();
+    _progController.dispose();
     super.dispose();
   }
 
@@ -100,6 +104,8 @@ class _RegisterPageState extends State<RegisterPage> {
       dob: _dobController.text.trim(), // Format: YYYY-MM-DD (BS)
       address: _addressController.text.trim(),
       shift: _shiftController.text.trim(),
+      prog: _shiftController.text.trim(),
+      contact: _contController.text.trim(),
       imagePath: _selectedImagePath,
     );
   }
@@ -562,6 +568,47 @@ class _RegisterPageState extends State<RegisterPage> {
                                   )),
                             ),
               
+                             // program
+                            SizedBox(height: 10.h),
+                            TextFormField(
+                              controller: _progController,
+                              cursorColor: Color(0xffFFFFFF),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (name) => validateRequired(string: name!, field: 'Program'),
+                              style: TextStyle(color: Color(0xffFFFFFF)),
+                              decoration: InputDecoration(
+                                  hintText: 'Program',
+                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                                  labelText: 'program',
+                                  labelStyle: TextStyle(
+                                    color: Color(0xffFFFFFF),
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+                    
+                             //Contact no
+                            SizedBox(height: 10.h),
+                            TextFormField(
+                              controller: _contController,
+                              keyboardType: TextInputType.phone
+                              ,
+                              cursorColor: Color(0xffFFFFFF),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (name) => validateRequired(string: name!, field: 'Contact'),
+                              style: TextStyle(color: Color(0xffFFFFFF)),
+                              decoration: InputDecoration(
+                                  hintText: 'Enter your contact number',
+                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                                  labelText: 'Contact Number',
+                                  labelStyle: TextStyle(
+                                    color: Color(0xffFFFFFF),
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+              
+
                             SizedBox(height: 20.h),
               
                             //Signup button
@@ -598,6 +645,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                         dob: _dobController.text, // Format: YYYY-MM-DD (BS)
                                         address: _addressController.text,
                                         shift: _shiftController.text,
+                                        contact: _contController.text,
+                                        prog: _progController.text,
                                         imagePath: _selectedImagePath,
                                       );
                                     },

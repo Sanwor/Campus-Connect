@@ -122,6 +122,8 @@ class AuthController extends GetxController {
     required String dob,
     required String address,
     required String shift,
+    required String prog,
+    required String contact,
     String? imagePath,
   }) async {
     isRegisterLoading.value = true;
@@ -138,6 +140,8 @@ class AuthController extends GetxController {
         "dob": dob,
         "address": address,
         "shift": shift.toLowerCase(),
+        "programme": prog,
+        "contact_no": contact,
         "image": imagePath != null ? await MultipartFile.fromFile(imagePath) : null,
       });
 
