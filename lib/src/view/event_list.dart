@@ -136,10 +136,7 @@ class _EventsPageState extends State<EventsPage> {
                                 final query =
                                     searchController.text.trim().toLowerCase();
                                 final matches = query.isEmpty ||
-                                    (event.eventTitle
-                                            ?.toLowerCase()
-                                            .contains(query) ??
-                                        false);
+                                    (event.eventTitle.toLowerCase().contains(query));
 
                                 if (!matches) return const SizedBox.shrink();
 
