@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:campus_connect/src/services/profile_services.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -70,4 +71,27 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> updateProfilePicture(File imageFile) async {
+  try {
+    isLoading.value = true;
+    
+    var formData = FormData.fromMap({
+      "image": await MultipartFile.fromFile(imageFile.path),
+    });
+
+    final response = await _profileService.updateProfile(formData);
+    
+    if (response.statusCode == 200) {
+      // Refresh profile data to get updated image
+      await getProfile();
+    } else {
+      throw Exception('Failed to update profile picture');
+    }
+  } catch (e) {
+    rethrow;
+  } finally {
+    isLoading.value = false;
+  }
+}
 }

@@ -1,5 +1,6 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
+import 'package:campus_connect/src/view/auth/change_password.dart';
 import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/view/event_list.dart';
 import 'package:campus_connect/src/view/notification_page.dart';
@@ -64,9 +65,14 @@ class _MenuPageState extends State<MenuPage> {
                 final profile = widget.profController.profile.value;
                 final fullName = "${profile?.firstName ?? ''} ${profile?.lastName ?? ''}".trim();
                 return Padding(
-                padding: EdgeInsets.only(left: 40.sp),
-                child: SizedBox(
+                padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 20.h),
+                child: Container(
                   height: 100.h,
+                        padding: EdgeInsets.all(20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20.r)
+                        ),
                   child: Row(
                     children: [
                       CircleAvatar(
@@ -106,12 +112,12 @@ class _MenuPageState extends State<MenuPage> {
 
             Divider(
               color: Color(0xff8E8E93),
-              thickness: .5.sp,
+              thickness: 0.5.sp,
             ),
 
             //settings components
             Padding(
-              padding: EdgeInsets.only(top: 40.sp),
+              padding: EdgeInsets.only(top: 40.h, left: 30.w, right: 30.w),
               child: SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -119,9 +125,13 @@ class _MenuPageState extends State<MenuPage> {
                     //account
                     InkWell(
                       onTap: () => Get.to(() => ProfilePage()),
-                      child: SizedBox(
-                        width: 300.w,
-                        height: 50.h,
+                      child: Container(
+                        height: 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -144,9 +154,13 @@ class _MenuPageState extends State<MenuPage> {
                     //notification
                     InkWell(
                       onTap: () => Get.to(() => NotificationPage()),
-                      child: SizedBox(
-                        width: 300.w,
-                        height: 50.h,
+                      child: Container(
+                        height: 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -169,9 +183,13 @@ class _MenuPageState extends State<MenuPage> {
                     //events
                     InkWell(
                       onTap: () => Get.to(() => EventsPage()),
-                      child: SizedBox(
-                        width: 300.w,
-                        height: 50.h,
+                      child: Container(
+                        height: 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
                         child: Row(
                           children: [
                             Icon(Icons.calendar_month_outlined,color: Colors.white,),
@@ -189,6 +207,33 @@ class _MenuPageState extends State<MenuPage> {
                     ),
                     SizedBox(height: 20.h),
 
+                    //change password
+                    InkWell(
+                      onTap: () => Get.to(() => ChangePasswordPage()),
+                      child: Container(
+                        height: 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.lock_reset, color: Colors.white,),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Change Password',
+                              style: TextStyle(
+                                  color: Color(0xffFFFFFF),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40.h),
+
                     //logout
                     InkWell(
                       onTap: () {
@@ -196,9 +241,13 @@ class _MenuPageState extends State<MenuPage> {
                         Get.off(() => LoginPage());
                         clearAllData();
                       },
-                      child: SizedBox(
-                        width: 300.w,
-                        height: 50.h,
+                      child: Container(
+                        height: 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
                         child: Row(
                           children: [
                             SvgPicture.asset('assets/logout.svg',

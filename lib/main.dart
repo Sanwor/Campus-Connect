@@ -44,14 +44,31 @@ void main() async {
   
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
+   // Create Dio instance
+  final dioInstance = Dio(
+    BaseOptions(
+      baseUrl: getBaseUrl(), // Your base URL function
+      headers: <String, String>{
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      receiveDataWhenStatusError: true,
+    ),
+  );
+
+  dioInstance.interceptors.add(DioInterceptor(dioInstance));
+
   final dio = Dio(
     BaseOptions(
       baseUrl: getBaseUrl(),
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),
+    
   )
-    ..interceptors.add(DioInterceptor())
+    ..interceptors.add(DioInterceptor(dioInstance))
     ..interceptors.add(LogInterceptor(
       request: true,
       requestHeader: true,
@@ -62,7 +79,7 @@ void main() async {
       logPrint: (object) => log(object.toString()),
     ));
 
-  // Register instances - ADD EVENT SERVICE HERE
+  // Register instances 
   Get.put<Dio>(dio);
   Get.put<AuthService>(AuthService(dio));
   Get.put<NoticeService>(NoticeService(dio));
@@ -73,6 +90,8 @@ void main() async {
   Get.put(UserService(Get.find<Dio>()));
   Get.put(UserController());
   Get.put(EventController());
+  Get.put<Dio>(dioInstance);
+
   
   // Check token status on app startup
   await checkTokenOnStartup();

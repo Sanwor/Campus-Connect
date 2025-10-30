@@ -113,8 +113,6 @@ class AuthController extends GetxController {
   // Register method (keep existing)
   Future<void> register({
     required String email,
-    required String password,
-    required String password2,
     required String firstName,
     required String lastName,
     required String rollNo,
@@ -131,8 +129,6 @@ class AuthController extends GetxController {
     try {
       var data = FormData.fromMap({
         "email": email,
-        "password": password,
-        "password2": password2,
         "first_name": firstName,
         "last_name": lastName,
         "roll_no": rollNo,
@@ -149,15 +145,16 @@ class AuthController extends GetxController {
       
       if (response.statusCode == 201 || response.statusCode == 200) {
         Get.snackbar('Success', 'Registration successful!');
-        Get.offAll(() => LoginPage());
-      } else if (response.statusCode == 400) {
+        
+        // Add a small delay before navigation
+        await Future.delayed(Duration(milliseconds: 500));
+        Get.back();
+        } else if (response.statusCode == 400) {
         String errorMessage = "Registration failed";
         if (response.data["detail"] != null) {
           errorMessage = response.data["detail"];
         } else if (response.data["email"] != null) {
           errorMessage = "Email: ${response.data["email"][0]}";
-        } else if (response.data["password"] != null) {
-          errorMessage = "Password: ${response.data["password"][0]}";
         } else if (response.data["profile"] != null) {
           errorMessage = "Profile: ${response.data["profile"][0]}";
         }

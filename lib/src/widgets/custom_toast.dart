@@ -1,54 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 showToast(message) {
   return Get.snackbar(
-    "",
-    "",
+    "Success",
+    message,
+    backgroundColor: Colors.green.shade700,
     colorText: Colors.white,
-    backgroundColor: Colors.white,
-    duration: const Duration(seconds: 3),
-    messageText: const SizedBox.shrink(),
-    titleText: Row(
-      children: [
-        Expanded(
-          child: Text(
-            message.toString(),
-          ),
-        ),
-      ],
-    ),
+    icon: Icon(Icons.check_circle, color: Colors.white),
+    snackPosition: SnackPosition.TOP,
+    duration: Duration(seconds: 3),
+    margin: EdgeInsets.all(10),
+    borderRadius: 8,
   );
 }
 
-showErrorToast(message) {
+showErrorToast(String message) {
   return Get.snackbar(
-    "",
-    "",
+    "Error",
+    message,
+    backgroundColor: Colors.red.shade700,
     colorText: Colors.white,
-    duration: const Duration(seconds: 3),
-    messageText: const SizedBox.shrink(),
-    titleText: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Center(
-            child: Icon(
-          Icons.info,
-          color: Colors.red,
-        )),
-        SizedBox(
-          width: 6.w,
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Text(
-              message.toString(),
-            ),
-          ),
-        ),
-      ],
-    ),
+    icon: Icon(Icons.error_outline, color: Colors.white),
+    shouldIconPulse: true,
+    duration: Duration(seconds: 3),
+    snackPosition: SnackPosition.TOP,
+    margin: EdgeInsets.all(10),
+    borderRadius: 8,
   );
 }

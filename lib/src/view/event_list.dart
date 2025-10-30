@@ -144,6 +144,7 @@ class _EventsPageState extends State<EventsPage> {
                                   borderRadius: BorderRadius.circular(16.r),
                                   child: EventContainer(
                                     eventTitle: event.eventTitle,
+                                    eventDetail: event.eventDetail,
                                     eventDate: event.eventDate,
                                     startTime: event.startTime,
                                     endTime: event.endTime,

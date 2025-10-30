@@ -13,6 +13,11 @@ class ProfileService {
     return await _dio.patch(
       'auth/profile/',
       data: formData,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ),
     );
   }
 }

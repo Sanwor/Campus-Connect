@@ -1,10 +1,11 @@
+import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
+import 'package:campus_connect/src/view/auth/update_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../app_utils/read_write.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -82,11 +83,34 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 50.r,
-                        backgroundImage: profile?.image != null 
-                            ? NetworkImage(profile!.image!) as ImageProvider
-                            : AssetImage('assets/profile.png'),
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 60.r,
+                            backgroundImage: profile?.image != null 
+                                ? NetworkImage(profile!.image!) as ImageProvider
+                                : AssetImage('assets/profile.png'),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xff193670),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                Get.to(() => UpdateProfilePicturePage());
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 20.sp,
+                              ),
+                              padding: EdgeInsets.all(8.sp),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 15.h),
                       Text(
@@ -109,7 +133,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-
                 SizedBox(height: 20.h),
 
                 // Details Container

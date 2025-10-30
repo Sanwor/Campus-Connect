@@ -22,14 +22,30 @@ class AuthService {
     );
   }
 
-
+  //register user
   Future<Response> register(FormData formData) async {
     return await _dio.post(
-      'auth/register/', 
+      'admission-records/', 
       data: formData,
+    );
+  }
+
+  //change password
+  Future<Response> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    return await _dio.post(
+      'auth/change-password/',
+      data: {
+        "old_password": oldPassword,
+        "new_password": newPassword,
+        "confirm_new_password": confirmNewPassword,
+      },
       options: Options(
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       ),
     );
@@ -38,10 +54,11 @@ class AuthService {
   //refresh token
   Future<Response> refreshToken(String refreshToken) async {
     return await _dio.post('auth/refresh/', data: {
-      'refresh_token': refreshToken,
+      'refresh': refreshToken,
     });
   }
 
+  //get user profile
   Future<Response> getUserProfile() async {
     return await _dio.get('user/profile/');
   }

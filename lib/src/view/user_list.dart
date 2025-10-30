@@ -1,5 +1,6 @@
 import 'package:campus_connect/src/controller/user_controller.dart';
 import 'package:campus_connect/src/model/user_model.dart';
+import 'package:campus_connect/src/view/auth/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -53,13 +54,39 @@ class UsersPage extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Users List',
+              'User List',
               style: TextStyle(
                 color: const Color(0xffFFFFFF),
                 fontSize: 24.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
+
+            SizedBox(height:20.h),
+            SizedBox(
+              height: 50.h,
+              width: 300.w,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff193670),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0.r),
+                              side: BorderSide(
+                                color: Colors.white,
+                                width: 2.w,
+                              ),
+                            ),
+                          ),
+                onPressed: ()=> Get.to(RegisterPage()),
+                child: Text(
+                            '+ Create New User',
+                            style: TextStyle(
+                                color: Color(0xffFFFFFF),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold),
+                          ),),
+            ),
+            SizedBox(height:20.h),
 
             Expanded(
               child: Obx(() {

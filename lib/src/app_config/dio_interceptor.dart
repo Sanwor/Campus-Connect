@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:campus_connect/src/app_utils/read_write.dart';
+import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:campus_connect/src/controller/auth_controller.dart';
 
 class DioInterceptor extends dio.Interceptor {
+  final dio.Dio _dio;
+  DioInterceptor(this._dio);
   @override
   void onRequest(dio.RequestOptions options, dio.RequestInterceptorHandler handler) {
     _applyAuthentication(options);
@@ -33,16 +37,17 @@ class DioInterceptor extends dio.Interceptor {
     
     // Handle token expiration (401/403 errors)
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
+      await _handleTokenRefresh(err, handler);
       final errorData = err.response?.data;
       if (errorData is Map && errorData['code'] == 'token_not_valid') {
-        log('🔄 Token expired, attempting refresh...');
+        log('**Token expired, attempting refresh...');
         
         try {
           final authController = Get.find<AuthController>();
           bool refreshed = await authController.refreshAuthToken();
           
           if (refreshed) {
-            log('✅ Token refreshed successfully, retrying request...');
+            log('Token refreshed successfully, retrying request...');
             
             // Get new token
             final newToken = read("access_token");
@@ -66,18 +71,18 @@ class DioInterceptor extends dio.Interceptor {
                   queryParameters: err.requestOptions.queryParameters,
                   options: newOptions,
                 );
-                log('🔄 Retry successful: ${response.statusCode}');
+                log('Retry successful: ${response.statusCode}');
                 return handler.resolve(response);
               } catch (retryError) {
-                log('❌ Retry failed: $retryError');
+                log('**Retry failed: $retryError');
                 return handler.next(err);
               }
             }
           } else {
-            log('❌ Token refresh failed, user needs to login again');
+            log('**Token refresh failed, user needs to login again');
           }
         } catch (refreshError) {
-          log('❌ Token refresh error: $refreshError');
+          log('**Token refresh error: $refreshError');
         }
       }
     }
@@ -131,10 +136,13 @@ class DioInterceptor extends dio.Interceptor {
     final bearerTokenEndpoints = [
       'auth/login/',
       'auth/register/',
+      'admission-records/',
+      'auth/change-password',
       'auth/refresh/',
       'auth/logout/',
       'user/',
       'profile/',
+      'auth/profile/',
     ];
 
     log('CHECKING AUTH FOR PATH: $path');
@@ -170,4 +178,52 @@ class DioInterceptor extends dio.Interceptor {
     
     return useBasicAuth;
   }
+
+  Future<void> _handleTokenRefresh(dio.DioException err, dio.ErrorInterceptorHandler handler) async {
+  try {
+    log('**Token expired, attempting refresh...');
+    
+    String refreshToken = read("refresh_token") ?? "";
+    if (refreshToken.isEmpty) {
+      log('**No refresh token available, user needs to login again');
+      _logoutUser();
+      return handler.next(err);
+    }
+
+    // Use the correct refresh endpoint
+    final AuthService authService = Get.find<AuthService>();
+    final response = await authService.refreshToken(refreshToken);
+    
+    if (response.statusCode == 200) {
+      // Save new tokens
+      String newAccessToken = response.data['access'];
+      write("access_token", newAccessToken);
+      
+      log('Token refreshed successfully');
+      
+      // Retry the original request with new token
+      err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+      final retryResponse = await _dio.fetch(err.requestOptions);
+      return handler.resolve(retryResponse);
+    } else {
+      log('**Token refresh failed with status: ${response.statusCode}');
+      _logoutUser();
+    }
+  } catch (e) {
+    log('**Token refresh failed: $e');
+    _logoutUser();
+  }
+}
+
+void _logoutUser() {
+  // Clear tokens and redirect to login
+  write("access_token", "");
+  write("refresh_token", "");
+  write("isAdmin", "false");
+  
+  // Navigate to login page
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Get.offAllNamed('login/');
+  });
+}
 }

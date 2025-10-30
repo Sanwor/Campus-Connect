@@ -23,8 +23,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Text controllers
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   final _fnameController = TextEditingController();
   final _lnameController = TextEditingController();
   final _rollNoController = TextEditingController();
@@ -43,8 +41,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     _fnameController.dispose();
     _lnameController.dispose();
     _rollNoController.dispose();
@@ -77,13 +73,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    if (!passwordConfirmed()) {
-      Get.snackbar('Invalid', "The password doesn't match",
-          colorText: Color(0xffFFFFFF),
-          backgroundColor: Colors.red);
-      return;
-    }
-
     if (_shiftController.text.trim().toLowerCase() != 'morning' && 
         _shiftController.text.trim().toLowerCase() != 'day') {
       Get.snackbar('Invalid', "Shift must be either 'morning' or 'day'",
@@ -95,8 +84,6 @@ class _RegisterPageState extends State<RegisterPage> {
     // Call the register method from AuthController
     await authController.register(
       email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-      password2: _confirmPasswordController.text.trim(),
       firstName: _fnameController.text.trim(),
       lastName: _lnameController.text.trim(),
       rollNo: _rollNoController.text.trim(),
@@ -110,9 +97,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  bool passwordConfirmed() {
-    return _passwordController.text.trim() == _confirmPasswordController.text.trim();
-  }
 
   String? validateShift(String? value) {
     if (value == null || value.isEmpty) {
@@ -195,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Column(
                           children: [
                             Text(
-                              'Register',
+                              'Register New User',
                               style: TextStyle(
                                 fontSize: 32.sp,
                                 fontWeight: FontWeight.w700,
@@ -464,15 +448,19 @@ class _RegisterPageState extends State<RegisterPage> {
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.0.sp),
                                       hintText: 'Select shift',
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 14.sp),
+                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14.sp), // Changed to white with slight opacity
                                     ),
                                     icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                                     validator: validateShift,
+                                    // Add this to control the hint text display
+                                    hint: Text(
+                                      'Select shift',
+                                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14.sp),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-              
                             SizedBox(height: 10.h),
               
                             //email
@@ -495,81 +483,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
               
                             SizedBox(height: 10.h),
-              
-                            //password
-                            TextFormField(
-                              controller: _passwordController,
-                              cursorColor: Color(0xffFFFFFF),
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              validator: (password) => validatePassword(string: password!),
-                              style: TextStyle(color: Color(0xffFFFFFF)),
-                              obscureText: isObscure1,
-                              keyboardType: TextInputType.visiblePassword,
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isObscure1 = !isObscure1;
-                                      });
-                                    },
-                                    icon: SvgPicture.asset(
-                                      isObscure1
-                                          ? 'assets/hide_post_icon.svg'
-                                          : 'assets/eye_outlined.svg',
-                                      colorFilter: ColorFilter.mode(
-                                          Colors.white, BlendMode.srcIn),
-                                    ),
-                                  ),
-                                  hintText: 'Enter your password',
-                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    color: Color(0xffFFFFFF),
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w500,
-                                  )),
-                            ),
-              
-                            SizedBox(height: 10.h),
-              
-                            //confirm password
-                            TextFormField(
-                              controller: _confirmPasswordController,
-                              cursorColor: Color(0xffFFFFFF),
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              validator: (confirmPassword) => validateConfirmPassword(
-                                  password: _passwordController.text,
-                                  confirmPassword: confirmPassword!),
-                              style: TextStyle(color: Color(0xffFFFFFF)),
-                              obscureText: isObscure2,
-                              keyboardType: TextInputType.visiblePassword,
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isObscure2 = !isObscure2;
-                                      });
-                                    },
-                                    icon: SvgPicture.asset(
-                                      isObscure2
-                                          ? 'assets/hide_post_icon.svg'
-                                          : 'assets/eye_outlined.svg',
-                                      colorFilter: ColorFilter.mode(
-                                          Colors.white, BlendMode.srcIn),
-                                    ),
-                                  ),
-                                  hintText: 'Confirm your password',
-                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                                  labelText: 'Confirm Password',
-                                  labelStyle: TextStyle(
-                                    color: Color(0xffFFFFFF),
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w500,
-                                  )),
-                            ),
-              
-                             // program
-                            SizedBox(height: 10.h),
+
+                            //program
                             TextFormField(
                               controller: _progController,
                               cursorColor: Color(0xffFFFFFF),
@@ -591,8 +506,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             SizedBox(height: 10.h),
                             TextFormField(
                               controller: _contController,
-                              keyboardType: TextInputType.phone
-                              ,
+                              keyboardType: TextInputType.phone,
                               cursorColor: Color(0xffFFFFFF),
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               validator: (name) => validateRequired(string: name!, field: 'Contact'),
@@ -611,7 +525,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                             SizedBox(height: 20.h),
               
-                            //Signup button
+                            //register button
                             Obx(() => SizedBox(
                             width: 260.w,
                             height: 50.h,
@@ -636,8 +550,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                       authController.isRegisterLoading.value = true;
                                       await authController.register(
                                         email: _emailController.text,
-                                        password: _passwordController.text,
-                                        password2: _confirmPasswordController.text,
                                         firstName: _fnameController.text,
                                         lastName: _lnameController.text,
                                         rollNo: _rollNoController.text,
@@ -660,7 +572,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ),
                                     )
                                   : Text(
-                                      'Sign up',
+                                      'Register',
                                       style: TextStyle(
                                         color: const Color(0xffFFFFFF),
                                         fontSize: 16.sp,
