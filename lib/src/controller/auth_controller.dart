@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
+import 'package:campus_connect/src/services/fcm_services.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
-import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile, Response;
@@ -31,11 +31,11 @@ class AuthController extends GetxController {
         if (response.data["refresh"] != null) {
           write("refresh_token", response.data["refresh"]);
         }
-        log('✅ Token refreshed successfully');
+        log('Token refreshed successfully');
         return true;
       }
     } catch (e) {
-      log('❌ Token refresh failed: $e');
+      log('Token refresh failed: $e');
     }
     return false;
   }
@@ -49,12 +49,14 @@ class AuthController extends GetxController {
 
     try {
       // Get FCM token first with error handling
+      final FCMService fcmService = Get.find<FCMService>();
       String? fcmToken;
       try {
-        fcmToken = await NotificationService.getFcmToken();
-        log("📱 FCM Token: $fcmToken");
+        // fcmToken = await NotificationService.getFcmToken();
+        fcmToken = await fcmService.getFCMToken();
+        log("FCM Token: $fcmToken");
       } catch (e) {
-        log("⚠️ Could not get FCM token: $e");
+        log("**Could not get FCM token: $e");
         fcmToken = null;
       }
 
@@ -64,8 +66,8 @@ class AuthController extends GetxController {
         write("access_token", response.data["access"] ?? "");
         write("refresh_token", response.data["refresh"] ?? "");
 
-        log('🔍 LOGIN RESPONSE DATA: ${response.data}');
-        log('🔍 LOGIN RESPONSE KEYS: ${response.data.keys}');
+        log('LOGIN RESPONSE DATA: ${response.data}');
+        log('LOGIN RESPONSE KEYS: ${response.data.keys}');
 
         String message = response.data["message"] ?? "";
         if (message.contains("Welcome back,")) {
@@ -75,7 +77,7 @@ class AuthController extends GetxController {
         }
 
         bool isAdminUser = _checkIfAdmin(response.data);
-        log('🔍 IS ADMIN RESULT: $isAdminUser');
+        log('IS ADMIN RESULT: $isAdminUser');
         write("isAdmin", isAdminUser.toString());
 
         showToast("Login successful!");
@@ -85,7 +87,7 @@ class AuthController extends GetxController {
         showErrorToast(errorMessage);
       }
     } catch (e) {
-      log("💥 Login error: $e");
+      log("**Login error: $e");
       if (e is DioException) {
         if (e.response != null) {
           log('Server response: ${e.response!.data}');

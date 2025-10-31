@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:campus_connect/src/app_config/constant.dart';
 import 'package:campus_connect/src/app_config/dio_interceptor.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
-import 'package:campus_connect/src/controller/event_controller.dart'; 
+import 'package:campus_connect/src/controller/event_controller.dart';
+import 'package:campus_connect/src/controller/notification_controller.dart'; 
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/controller/user_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/event_services.dart';
+import 'package:campus_connect/src/services/fcm_services.dart';
 import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/services/profile_services.dart';
@@ -91,6 +93,10 @@ void main() async {
   Get.put(UserController());
   Get.put(EventController());
   Get.put<Dio>(dioInstance);
+  //notification
+  Get.put<NotificationController>(NotificationController());
+  Get.put<FCMService>(FCMService());
+  Get.find<FCMService>().initialize();
 
   
   // Check token status on app startup
@@ -107,17 +113,17 @@ Future<void> checkTokenOnStartup() async {
     String? accessToken = box.read("access_token");
     String? refreshToken = box.read("refresh_token");
     
-    log('🔐 Startup Token Check:');
-    log('   Access Token: ${accessToken != null ? "Exists" : "Missing"}');
-    log('   Refresh Token: ${refreshToken != null ? "Exists" : "Missing"}');
+    log('Startup Token Check:');
+    log('Access Token: ${accessToken != null ? "Exists" : "Missing"}');
+    log('Refresh Token: ${refreshToken != null ? "Exists" : "Missing"}');
     
     if (accessToken == null || refreshToken == null) {
-      log('🚫 No tokens found, user needs to login');
+      log('No tokens found, user needs to login');
       return;
     }
     
   } catch (e) {
-    log('❌ Startup token check error: $e');
+    log('Startup token check error: $e');
   }
 }
 
