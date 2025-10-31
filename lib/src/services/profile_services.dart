@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 class ProfileService {
@@ -6,7 +8,15 @@ class ProfileService {
   ProfileService(this._dio);
 
   Future<Response> getProfile() async {
-    return await _dio.get('auth/profile/');
+    try {
+      final response = await _dio.get('auth/profile/');
+      log(' Profile API Response Status: ${response.statusCode}');
+      log(' Profile API Response Data: ${response.data}');
+      return response;
+    } catch (e) {
+      log('** Profile API Error: $e');
+      rethrow;
+    }
   }
 
   Future<Response> updateProfile(FormData formData) async {

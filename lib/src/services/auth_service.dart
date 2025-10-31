@@ -53,9 +53,12 @@ class AuthService {
 
   //refresh token
   Future<Response> refreshToken(String refreshToken) async {
-    return await _dio.post('auth/refresh/', data: {
-      'refresh': refreshToken,
-    });
+    return await _dio.post(
+      'auth/token/refresh/',  // Correct endpoint
+      data: {
+        'refresh': refreshToken,
+      },
+    );
   }
 
   //get user profile

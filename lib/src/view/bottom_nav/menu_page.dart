@@ -5,6 +5,7 @@ import 'package:campus_connect/src/view/auth/login_page.dart';
 import 'package:campus_connect/src/view/event_list.dart';
 import 'package:campus_connect/src/view/notification_page.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
+import 'package:campus_connect/src/view/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -124,7 +125,13 @@ class _MenuPageState extends State<MenuPage> {
                   children: [
                     //account
                     InkWell(
-                      onTap: () => Get.to(() => ProfilePage()),
+                      onTap: () {
+                        if (read("isAdmin") == "true" ) {
+                          Get.to(() => UsersPage()); // Navigate to Users list for admin
+                        } else {
+                          Get.to(() => ProfilePage()); // Navigate to Profile for students
+                        }
+                      },
                       child: Container(
                         height: 60.h,
                         padding: EdgeInsets.symmetric(horizontal: 20.sp),

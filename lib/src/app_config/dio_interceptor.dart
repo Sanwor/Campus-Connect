@@ -35,9 +35,8 @@ class DioInterceptor extends dio.Interceptor {
     log('ERROR RESPONSE: ${err.response?.data}');
     log('REQUEST HEADERS: ${err.requestOptions.headers}');
     
-    // Handle token expiration (401/403 errors)
-    if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
-      await _handleTokenRefresh(err, handler);
+    // Handle token expiration (ONLY 401 errors)
+    if (err.response?.statusCode == 401) {
       final errorData = err.response?.data;
       if (errorData is Map && errorData['code'] == 'token_not_valid') {
         log('**Token expired, attempting refresh...');
@@ -80,14 +79,39 @@ class DioInterceptor extends dio.Interceptor {
             }
           } else {
             log('**Token refresh failed, user needs to login again');
+            // Only redirect to login if token refresh fails for 401
+            _redirectToLogin();
           }
         } catch (refreshError) {
           log('**Token refresh error: $refreshError');
+          _redirectToLogin();
         }
+      } else {
+        // 401 but not token_not_valid - might be other auth issues
+        return handler.next(err);
       }
+    } 
+    // Handle permission denied (403) - DO NOT refresh token for this
+    else if (err.response?.statusCode == 403) {
+      log('🔒 Permission denied - User cannot access this resource');
+      log('ℹ️ This is normal for non-admin users accessing restricted endpoints');
+      // Just continue with the error - don't refresh token or redirect
+      return handler.next(err);
     }
-    
-    return super.onError(err, handler);
+    // Handle all other errors
+    else {
+      return handler.next(err);
+    }
+  }
+
+  void _redirectToLogin() {
+    // Use a small delay and check current route to avoid conflicts
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (Get.currentRoute != '/login' && Get.currentRoute != '/login/') {
+        log('🔄 Redirecting to login due to token expiration');
+        Get.offAllNamed('/login');
+      }
+    });
   }
 
   // Main method to apply authentication
@@ -143,6 +167,7 @@ class DioInterceptor extends dio.Interceptor {
       'user/',
       'profile/',
       'auth/profile/',
+      'auth/token/refresh/', 
     ];
 
     log('CHECKING AUTH FOR PATH: $path');
@@ -223,7 +248,7 @@ void _logoutUser() {
   
   // Navigate to login page
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    Get.offAllNamed('login/');
+    Get.offAllNamed('/login');
   });
 }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/model/notification_model.dart';
@@ -22,13 +24,13 @@ class NotificationController extends GetxController {
     try {
       final stored = read(_storageKey);
       if (stored != null && stored is String) {
-        final List<dynamic> jsonList = stored is String ? (stored as dynamic) : [];
+        final List<dynamic> jsonList = stored as List<dynamic>;
         _notifications.assignAll(
           jsonList.map((json) => AppNotification.fromJson(json)).toList(),
         );
       }
     } catch (e) {
-      print('Error loading notifications: $e');
+      log('Error loading notifications: $e');
     }
   }
 
@@ -38,7 +40,7 @@ class NotificationController extends GetxController {
       final jsonList = _notifications.map((n) => n.toJson()).toList();
       write(_storageKey, jsonList);
     } catch (e) {
-      print('Error saving notifications: $e');
+      log('Error saving notifications: $e');
     }
   }
 

@@ -5,10 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class UsersPage extends StatelessWidget {
-  UsersPage({super.key});
+class UsersPage extends StatefulWidget {
+  const UsersPage({super.key});
 
+  @override
+  State<UsersPage> createState() => _UsersPageState();
+}
+
+class _UsersPageState extends State<UsersPage> {
   final UserController userController = Get.find<UserController>();
+
+   @override
+  void initState() {
+    super.initState();
+    initialise();
+  }
+
+  initialise() {
+    userController.getUsers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +230,4 @@ class UsersPage extends StatelessWidget {
       ),
     );
   }
-
-  
 }

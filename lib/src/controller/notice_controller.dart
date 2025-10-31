@@ -82,7 +82,7 @@ class NoticeController extends GetxController {
     } catch (e, stack) {
       log("Error posting notice: $e");
       log(stack.toString());
-      showToast("Failed to post notice");
+      showErrorToast("Failed to post notice");
     } finally {
       isNoticePostLoading.value = false;
     }

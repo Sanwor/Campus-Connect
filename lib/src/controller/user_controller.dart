@@ -17,91 +17,100 @@ class UserController extends GetxController {
   }
 
   getUsers() async {
-    isUserLoading.value = true;
-    try {
-      log('**Starting to fetch users...');
-      final response = await _userService.getUsers();
-      
-      log('**API Response Status: ${response.statusCode}');
-      log('**Response Data Type: ${response.data.runtimeType}');
-      log('**Response Data: ${response.data}');
-      
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Handle different response structures
-        if (response.data is List) {
-          log('📋 Response is a List with ${response.data.length} items');
-          var listOfData = [];
-          for (var data in response.data) {
-            log('👤 User Data: $data');
-            listOfData.add(UserModel.fromJson(data));
+  isUserLoading.value = true;
+  try {
+    log('**Starting to fetch users...');
+    final response = await _userService.getUsers();
+    
+    log('**API Response Status: ${response.statusCode}');
+    log('**Response Data Type: ${response.data.runtimeType}');
+    log('**Response Data: ${response.data}');
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle different response structures
+      if (response.data is List) {
+        log('Response is a List with ${response.data.length} items');
+        var listOfData = [];
+        for (var data in response.data) {
+          log('User Data: $data');
+          listOfData.add(UserModel.fromJson(data));
+        }
+        userList.value = listOfData;
+        log('Successfully loaded ${userList.length} users');
+      } 
+      else if (response.data is Map) {
+        log('Response is a Map, keys: ${response.data.keys}');
+        
+        // Check common API response structures
+        if (response.data.containsKey('results')) {
+          log('Found "results" key in response');
+          var results = response.data['results'];
+          if (results is List) {
+            var listOfData = [];
+            for (var data in results) {
+              listOfData.add(UserModel.fromJson(data));
+            }
+            userList.value = listOfData;
           }
-          userList.value = listOfData;
-          log('✅ Successfully loaded ${userList.length} users');
         } 
-        else if (response.data is Map) {
-          log('🗺️ Response is a Map, keys: ${response.data.keys}');
-          
-          // Check common API response structures
-          if (response.data.containsKey('results')) {
-            log('📊 Found "results" key in response');
-            var results = response.data['results'];
-            if (results is List) {
-              var listOfData = [];
-              for (var data in results) {
-                listOfData.add(UserModel.fromJson(data));
-              }
-              userList.value = listOfData;
+        else if (response.data.containsKey('data')) {
+          log('Found "data" key in response');
+          var data = response.data['data'];
+          if (data is List) {
+            var listOfData = [];
+            for (var item in data) {
+              listOfData.add(UserModel.fromJson(item));
             }
-          } 
-          else if (response.data.containsKey('data')) {
-            log('📊 Found "data" key in response');
-            var data = response.data['data'];
-            if (data is List) {
-              var listOfData = [];
-              for (var item in data) {
-                listOfData.add(UserModel.fromJson(item));
-              }
-              userList.value = listOfData;
-            }
+            userList.value = listOfData;
           }
-          else if (response.data.containsKey('users')) {
-            log('📊 Found "users" key in response');
-            var users = response.data['users'];
-            if (users is List) {
-              var listOfData = [];
-              for (var user in users) {
-                listOfData.add(UserModel.fromJson(user));
-              }
-              userList.value = listOfData;
+        }
+        else if (response.data.containsKey('users')) {
+          log('Found "users" key in response');
+          var users = response.data['users'];
+          if (users is List) {
+            var listOfData = [];
+            for (var user in users) {
+              listOfData.add(UserModel.fromJson(user));
             }
-          }
-          else {
-            log('⚠️ Unexpected Map structure: ${response.data}');
+            userList.value = listOfData;
           }
         }
         else {
-          log('❓ Unexpected response type: ${response.data.runtimeType}');
-        }
-      } else {
-        log('❌ API returned status: ${response.statusCode}');
-      }
-    } catch (e) {
-      log('💥 Error fetching users: $e');
-      if (e is DioException) {
-        log('🌐 Dio Error Details:');
-        log('   Message: ${e.message}');
-        log('   URL: ${e.requestOptions.uri}');
-        log('   Headers: ${e.requestOptions.headers}');
-        if (e.response != null) {
-          log('   Response Status: ${e.response!.statusCode}');
-          log('   Response Data: ${e.response!.data}');
+          log('**Unexpected Map structure: ${response.data}');
         }
       }
-    } finally {
-      isUserLoading.value = false;
-      log('🏁 Finished loading users. Total users: ${userList.length}');
+      else {
+        log('**Unexpected response type: ${response.data.runtimeType}');
+      }
+    } else {
+      log(' **API returned status: ${response.statusCode}');
     }
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 403) {
+      log(' **Permission Denied: User does not have permission to access users list');
+      log('   This is normal for non-admin users');
+      // Clear any existing user list since non-admin users can't see other users
+      userList.value = [];
+      // You can show a message to the user if needed
+      // Get.snackbar('Info', 'User list is only available for admin accounts');
+    } else {
+      log('   Error fetching users: $e');
+      log('   Dio Error Details:');
+      log('   Message: ${e.message}');
+      log('   URL: ${e.requestOptions.uri}');
+      log('   Headers: ${e.requestOptions.headers}');
+      if (e.response != null) {
+        log('   Response Status: ${e.response!.statusCode}');
+        log('   Response Data: ${e.response!.data}');
+      }
+    }
+  } catch (e) {
+    log('**Unexpected error fetching users: $e');
+  } finally {
+    isUserLoading.value = false;
+    log(' Finished loading users. Total users: ${userList.length}');
   }
+}
 
   refreshUsers() async {
     log('🔄 Manual refresh triggered');

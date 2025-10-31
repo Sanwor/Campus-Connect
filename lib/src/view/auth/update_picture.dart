@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:campus_connect/src/controller/profile_controller.dart';
+import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -33,13 +34,13 @@ class _UpdateProfilePicturePageState extends State<UpdateProfilePicturePage> {
         });
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image: $e');
+      showErrorToast('Failed to pick image: $e');
     }
   }
 
   Future<void> _updateProfilePicture() async {
     if (_selectedImage == null) {
-      Get.snackbar('Error', 'Please select an image first');
+      showErrorToast('Please select an image first');
       return;
     }
 
@@ -48,19 +49,9 @@ class _UpdateProfilePicturePageState extends State<UpdateProfilePicturePage> {
     try {
       await _profileController.updateProfilePicture(_selectedImage!);
       Get.back();
-      Get.snackbar(
-        'Success', 
-        'Profile picture updated successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      showToast('Profile picture updated successfully');
     } catch (e) {
-      Get.snackbar(
-        'Error', 
-        'Failed to update profile picture: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      showErrorToast('Failed to update profile picture: $e');
     } finally {
       _isLoading.value = false;
     }

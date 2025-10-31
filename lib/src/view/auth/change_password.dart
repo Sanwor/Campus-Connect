@@ -1,4 +1,5 @@
 import 'package:campus_connect/src/services/auth_service.dart';
+import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -35,11 +36,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         
         if (response.statusCode == 200) {
           Get.back();
-          Get.snackbar(
-            'Success',
-            'Password changed successfully',
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
+          showToast('Password changed successfully',
           );
         } else {
           // Handle API error responses
@@ -52,20 +49,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             errorMessage = "New password: ${response.data['new_password'][0]}";
           }
           
-          Get.snackbar(
-            'Error',
-            errorMessage,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          showErrorToast(errorMessage);
         }
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Failed to change password: $e',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        showErrorToast('Failed to change password: $e');
       } finally {
         _isLoading.value = false;
       }

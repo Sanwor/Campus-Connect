@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:campus_connect/src/app_utils/validations.dart';
 import 'package:campus_connect/src/controller/auth_controller.dart';
 import 'package:campus_connect/src/widgets/custom_datepicker.dart';
+import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -61,9 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
         });
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image',
-          colorText: Color(0xffFFFFFF),
-          backgroundColor: Colors.red);
+      showErrorToast('Failed to pick image');
     }
   }
 
@@ -74,9 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_shiftController.text.trim().toLowerCase() != 'morning' && 
         _shiftController.text.trim().toLowerCase() != 'day') {
-      Get.snackbar('Invalid', "Shift must be either 'morning' or 'day'",
-          colorText: Color(0xffFFFFFF),
-          backgroundColor: Colors.red);
+      showErrorToast("Shift must be either 'morning' or 'day'");
       return;
     }
 
@@ -447,14 +444,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.0.sp),
                                       hintText: 'Select shift',
-                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14.sp), // Changed to white with slight opacity
+                                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14.sp), // Changed to white with opacity
                                     ),
                                     icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                                     validator: validateShift,
                                     // Add this to control the hint text display
                                     hint: Text(
                                       'Select shift',
-                                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14.sp),
+                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14.sp),
                                     ),
                                   ),
                                 ),

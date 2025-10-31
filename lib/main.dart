@@ -14,6 +14,9 @@ import 'package:campus_connect/src/services/notice_service.dart';
 import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/services/profile_services.dart';
 import 'package:campus_connect/src/services/user_service.dart';
+import 'package:campus_connect/src/view/auth/login_page.dart';
+import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
+import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -162,7 +165,43 @@ class _MyWidgetState extends State<MyWidget> {
               return GlobalConnectivityWrapper(
                 child: child!,
               );
-            });
+            },
+            onGenerateRoute: (settings) {
+      log('🛣️ ATTEMPTED ROUTE: ${settings.name}');
+      if (settings.name == '/login/') {
+      log('❌ FOUND THE PROBLEM: Navigation to /login/ detected');
+      log('📱 Stack trace:');
+      log(StackTrace.current as String);
+    }
+    return null;
+  },
+  getPages: [
+    GetPage(name: '/', page: () => SplashScreen()),
+    GetPage(name: '/login', page: () => LoginPage()),      // Without slash
+    GetPage(name: '/login/', page: () => LoginPage()),     // With slash
+    GetPage(name: '/home', page: () => BottomNavPage(initialIndex: 0,)),
+    GetPage(name: '/profile', page: () => ProfilePage()),
+    // ... other routes
+  ],
+  unknownRoute: GetPage(
+    name: '/notfound',
+    page: () => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Route not found: ${Get.currentRoute}'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Get.offAllNamed('/login'),
+              child: Text('Go to Login'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+            );
       },
     );
   }

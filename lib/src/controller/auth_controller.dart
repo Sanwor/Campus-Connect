@@ -3,7 +3,6 @@ import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/profile_controller.dart';
 import 'package:campus_connect/src/services/auth_service.dart';
 import 'package:campus_connect/src/services/fcm_services.dart';
-import 'package:campus_connect/src/services/notification_services.dart';
 import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
 import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
@@ -18,26 +17,30 @@ class AuthController extends GetxController {
   // Add refresh token method
   Future<bool> refreshAuthToken() async {
     try {
-      String? refreshToken = read("refresh_token");
-      if (refreshToken == null || refreshToken.isEmpty) {
+      String refreshToken = read("refresh_token") ?? "";
+      if (refreshToken.isEmpty) {
         return false;
       }
 
+      log('🔄 Attempting token refresh...');
       final response = await _authService.refreshToken(refreshToken);
       
       if (response.statusCode == 200) {
-        write("access_token", response.data["access"] ?? "");
-        // Update refresh token if a new one is provided
-        if (response.data["refresh"] != null) {
-          write("refresh_token", response.data["refresh"]);
+        write("access_token", response.data['access']);
+        // Optionally update refresh token if provided
+        if (response.data['refresh'] != null) {
+          write("refresh_token", response.data['refresh']);
         }
-        log('Token refreshed successfully');
+        log('✅ Token refresh successful');
         return true;
+      } else {
+        log('❌ Token refresh failed with status: ${response.statusCode}');
+        return false;
       }
     } catch (e) {
-      log('Token refresh failed: $e');
+      log('💥 Token refresh error: $e');
+      return false;
     }
-    return false;
   }
 
   // Updated login method with FCM token
@@ -65,6 +68,9 @@ class AuthController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         write("access_token", response.data["access"] ?? "");
         write("refresh_token", response.data["refresh"] ?? "");
+
+        // Store email for profile use
+        write("userEmail", email);
 
         log('LOGIN RESPONSE DATA: ${response.data}');
         log('LOGIN RESPONSE KEYS: ${response.data.keys}');
@@ -146,7 +152,7 @@ class AuthController extends GetxController {
       final response = await _authService.register(data);
       
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Get.snackbar('Success', 'Registration successful!');
+        showToast('Registration successful!');
         
         // Add a small delay before navigation
         await Future.delayed(Duration(milliseconds: 500));
@@ -160,13 +166,13 @@ class AuthController extends GetxController {
         } else if (response.data["profile"] != null) {
           errorMessage = "Profile: ${response.data["profile"][0]}";
         }
-        Get.snackbar('Error', errorMessage);
+        showErrorToast(errorMessage);
       } else {
-        Get.snackbar('Error', "Registration failed. Please try again.");
+        showErrorToast("Registration failed. Please try again.");
       }
     } catch (e) {
       log(e.toString());
-      Get.snackbar('Error', "An error occurred during registration");
+      showErrorToast("An error occurred during registration");
     } finally {
       isRegisterLoading.value = false;
     }
@@ -192,6 +198,6 @@ class AuthController extends GetxController {
     clearAllData();
     final ProfileController profileController = Get.find<ProfileController>();
     profileController.profile.value = null;
-    Get.offAllNamed('login/');
+    Get.offAllNamed('/login');
   }
 }

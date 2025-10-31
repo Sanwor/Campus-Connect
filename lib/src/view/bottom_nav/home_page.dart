@@ -6,6 +6,7 @@ import 'package:campus_connect/src/model/class_schedule.dart';
 import 'package:campus_connect/src/view/bottom_nav/bottom_nav.dart';
 import 'package:campus_connect/src/view/create_notice.dart';
 import 'package:campus_connect/src/view/notice_details.dart';
+import 'package:campus_connect/src/view/notification_page.dart';
 import 'package:campus_connect/src/view/profile_page.dart';
 import 'package:campus_connect/src/view/user_list.dart';
 import 'package:campus_connect/src/widgets/custom_alerts.dart';
@@ -86,6 +87,8 @@ bool isUserLoggedIn() {
               ),
             ),
         ],
+        leading: IconButton(onPressed: () => Get.to(() => NotificationPage()),
+         icon: Icon(Icons.notifications),color: Colors.white,),
       ),
 
       //chat bot

@@ -170,7 +170,7 @@ class EventController extends GetxController {
     Get.snackbar(
       'Event',
       message,
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       duration: Duration(seconds: 2),
     );
   }

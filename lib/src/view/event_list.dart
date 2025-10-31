@@ -1,6 +1,7 @@
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/controller/event_controller.dart';
-import 'package:campus_connect/src/view/create_event.dart'; 
+import 'package:campus_connect/src/view/create_event.dart';
+import 'package:campus_connect/src/view/event_detail.dart'; 
 import 'package:campus_connect/src/widgets/custom_alerts.dart';
 import 'package:campus_connect/src/widgets/event_container.dart';
 import 'package:flutter/material.dart';
@@ -188,53 +189,8 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   void _showEventDetails(event) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff204486),
-        title: Text(
-          'Event Details',
-          style: TextStyle(color: Colors.white, fontSize: 20.sp),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDetailRow('Title', event.eventTitle),
-              _buildDetailRow('Date', event.eventDate),
-              _buildDetailRow('Time', '${event.startTime} - ${event.endTime}'),
-              _buildDetailRow('Location', event.location),
-              _buildDetailRow('Description', event.eventDetail),
-              if (event.image != null) SizedBox(height: 10.h),
-              if (event.image != null)
-                Container(
-                  width: double.infinity,
-                  height: 150.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    image: DecorationImage(
-                      image: NetworkImage(event.image!),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Close',
-              style: TextStyle(color: Colors.white, fontSize: 16.sp),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  Get.to(() => EventDetailPage(event: event));
+}
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),

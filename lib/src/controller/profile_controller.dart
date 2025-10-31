@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/services/profile_services.dart';
+import 'package:campus_connect/src/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import '../model/profile_model.dart';
@@ -20,15 +22,36 @@ class ProfileController extends GetxController {
       final response = await _profileService.getProfile();
       
       if (response.statusCode == 200) {
-        profile.value = ProfileModel.fromJson(response.data);
-        log('✅ Profile loaded successfully');
-      } else {
+        final data = response.data;
+        log('Full API Response: $data');
+        
+        // Get email from storage
+        final String userEmail = read("userEmail") ?? '';
+        log('Stored email: $userEmail');
+        
+        // Create ProfileModel directly - no JSON parsing issues
+        profile.value = ProfileModel(
+          firstName: data['first_name']?.toString() ?? '',
+          lastName: data['last_name']?.toString() ?? '',
+          rollNo: data['roll_no']?.toString() ?? '',
+          semester: (data['semester'] as num?)?.toInt() ?? 0,
+          dob: data['dob']?.toString() ?? '',
+          address: data['address']?.toString() ?? '',
+          image: data['image']?.toString(),
+          shift: data['shift']?.toString() ?? '',
+          email: userEmail, // Use the stored email directly
+          contact: data['contact_no']?.toString() ?? '',
+        );
+        
+        log('Profile loaded with email: ${profile.value?.email}');
+      } 
+      else {
         errorMessage.value = 'Failed to load profile';
-        log('❌ Profile load failed: ${response.statusCode}');
+        log('**Profile load failed: ${response.statusCode}');
       }
     } catch (e) {
       errorMessage.value = 'Error loading profile: $e';
-      log('❌ Profile error: $e');
+      log('**Profile error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -63,10 +86,10 @@ class ProfileController extends GetxController {
       if (response.statusCode == 200) {
         // Refresh profile data
         await getProfile();
-        Get.snackbar('Success', 'Profile updated successfully');
+        showToast('Profile updated successfully');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update profile: $e');
+      showErrorToast('Failed to update profile: $e');
     } finally {
       isLoading.value = false;
     }
