@@ -158,12 +158,10 @@ class _EventsPageState extends State<EventsPage> {
                                           builder: (BuildContext context) {
                                             return CustomAlert(
                                               title: 'Delete Event',
-                                              content:
-                                                  'Do you want to delete this event?',
+                                              content: 'Do you want to delete this event?',
                                               onTap: () async {
-                                                await eventCon
-                                                    .deleteEvent(event.id);
-                                                Get.back();
+                                                await eventCon.deleteEvent(event.id);
+                                                if (context.mounted) {Navigator.pop(context);}
                                                 eventCon.getEvents();
                                               },
                                             );
@@ -171,9 +169,9 @@ class _EventsPageState extends State<EventsPage> {
                                         );
                                       } else if (value == 'update') {
                                         Get.to(() => CreateEvent(
-                                              isUpdate: true,
-                                              eventId: event.id,
-                                            ));
+                                          isUpdate: true,
+                                          eventId: event.id,
+                                        ));
                                       }
                                     },
                                   ),

@@ -155,28 +155,28 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: 10.sp),
 
-                            //forgot password
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Color(0xffFFFFFF)),
-                                ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Text(
-                                    ' Reset',
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Color(0xffFFFFFF),
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                )
-                              ],
-                            ),
+                            // //forgot password(not used for now)
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.end,
+                            //   children: [
+                            //     Text(
+                            //       'Forgot Password?',
+                            //       style: TextStyle(
+                            //           fontSize: 12.sp,
+                            //           color: Color(0xffFFFFFF)),
+                            //     ),
+                            //     GestureDetector(
+                            //       onTap: () {},
+                            //       child: Text(
+                            //         ' Reset',
+                            //         style: TextStyle(
+                            //             fontSize: 12.sp,
+                            //             color: Color(0xffFFFFFF),
+                            //             fontWeight: FontWeight.w600),
+                            //       ),
+                            //     )
+                            //   ],
+                            // ),
 
                             SizedBox(height: 30.h),
 
@@ -233,39 +233,33 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 20.h),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Not registered yet? ',
-                        style: TextStyle(
-                            color: Color(0xffFFFFFF),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      GestureDetector(
-                        onTap: () => Get.to(() => RegisterPage()),
-                        child: Text(
-                          'Register now.',
-                          style: TextStyle(
-                              color: Color(0xffFFFFFF),
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+                  //// (not needed)
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       'Not registered yet? ',
+                  //       style: TextStyle(
+                  //           color: Color(0xffFFFFFF),
+                  //           fontSize: 12.sp,
+                  //           fontWeight: FontWeight.w400),
+                  //     ),
+                  //     GestureDetector(
+                  //       onTap: () => Get.to(() => RegisterPage()),
+                  //       child: Text(
+                  //         'Register now.',
+                  //         style: TextStyle(
+                  //             color: Color(0xffFFFFFF),
+                  //             fontSize: 14.sp,
+                  //             fontWeight: FontWeight.bold),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
 
                   SizedBox(height: 20.h),
 
-                  //google login
-                  // IconButton(
-                  //     onPressed: () {},
-                  //     icon: SvgPicture.asset(
-                  //       'assets/loginGoogle.svg',
-                  //       height: 50.h,
-                  //       width: 50.w,
-                  //     ))
+                
                 ],
               ),
             ),

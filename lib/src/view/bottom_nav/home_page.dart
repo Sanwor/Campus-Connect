@@ -344,17 +344,13 @@ bool isUserLoggedIn() {
                                           if (value == 'delete') {
                                             showDialog(
                                                 context: context,
-                                                builder:
-                                                    (BuildContext context) {
+                                                builder:(BuildContext context) {
                                                   return CustomAlert(
                                                     title: 'Delete',
-                                                    content:
-                                                        'Do you want to delete this company?',
+                                                    content: 'Do you want to delete this notice?',
                                                     onTap: () async {
-                                                      noticeCon.deleteNotice(
-                                                          noticeCon
-                                                              .noticeList[index]
-                                                              .id);
+                                                      noticeCon.deleteNotice(noticeCon.noticeList[index].id);
+                                                      Navigator.pop(context);
                                                     },
                                                   );
                                                 });

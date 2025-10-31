@@ -98,19 +98,14 @@ class _CreateNoticeState extends State<CreateNotice> {
                   controller: titleCon,
                   validator: (value) => validateIsEmpty(string: value!),
                 ),
-                SizedBox(
-                  height: 20.h,
-                ),
+                SizedBox(height: 20.h,),
                 CustomTextFormField(
                   headingText: 'Details',
                   maxLines: 8,
                   controller: detailsCon,
                   validator: (value) => validateIsEmpty(string: value!),
                 ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                /////////////////////////////////////////////////////////////////
+                SizedBox(height: 20.h,),
 
                 Text(
                   'Upload an image*:',
@@ -127,17 +122,13 @@ class _CreateNoticeState extends State<CreateNotice> {
                             showModalBottomSheet(
                               context: context,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20.r)),
-                              ),
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
                               backgroundColor: Color(0xff020826),
                               builder: (context) {
                                 return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20.w, vertical: 20.h),
+                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                                   child: Column(
-                                    mainAxisSize: MainAxisSize
-                                        .min, // shrink to fit content
+                                    mainAxisSize: MainAxisSize.min, // shrink to fit content
                                     children: [
                                       SizedBox(
                                         width: double.infinity,
@@ -147,21 +138,17 @@ class _CreateNoticeState extends State<CreateNotice> {
                                             backgroundColor: Colors.transparent,
                                             iconColor: Colors.white,
                                             shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: Colors.white),
-                                              borderRadius:
-                                                  BorderRadius.circular(15.r),
+                                              side: BorderSide(color: Colors.white),
+                                              borderRadius:BorderRadius.circular(15.r),
                                             ),
                                           ),
                                           onPressed: () async {
-                                            final picked =
-                                                await ImagePicker().pickImage(
+                                            final picked = await ImagePicker().pickImage(
                                               source: ImageSource.camera,
                                             );
                                             if (picked != null) {
                                               setState(() {
-                                                selectedImage =
-                                                    File(picked.path);
+                                                selectedImage =File(picked.path);
                                               });
                                             }
 
@@ -169,11 +156,9 @@ class _CreateNoticeState extends State<CreateNotice> {
                                             Get.back();
                                           },
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment:MainAxisAlignment.center,
                                             children: [
-                                              const Icon(
-                                                  Icons.camera_alt_outlined),
+                                              const Icon(Icons.camera_alt_outlined),
                                               SizedBox(width: 20.w),
                                               Text(
                                                 "Camera",
@@ -194,29 +179,24 @@ class _CreateNoticeState extends State<CreateNotice> {
                                             backgroundColor: Colors.transparent,
                                             iconColor: Colors.white,
                                             shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: Colors.white),
-                                              borderRadius:
-                                                  BorderRadius.circular(15.r),
+                                              side: BorderSide(color: Colors.white),
+                                              borderRadius:BorderRadius.circular(15.r),
                                             ),
                                           ),
                                           onPressed: () async {
-                                            final picked =
-                                                await ImagePicker().pickImage(
+                                            final picked = await ImagePicker().pickImage(
                                               source: ImageSource.gallery,
                                             );
                                             if (picked != null) {
                                               setState(() {
-                                                selectedImage =
-                                                    File(picked.path);
+                                                selectedImage = File(picked.path);
                                               });
                                             }
                                             // Pop Bottom Sheet
                                             Get.back();
                                           },
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               const Icon(Icons.image_outlined),
                                               SizedBox(width: 20.w),
@@ -244,8 +224,7 @@ class _CreateNoticeState extends State<CreateNotice> {
                                 color: Colors.white, // border color
                                 width: 1, // border width
                               ),
-                              borderRadius: BorderRadius.circular(
-                                  20.r), // rounded corners
+                              borderRadius: BorderRadius.circular(20.r), // rounded corners
                             ),
                             child: Center(
                               child: Column(
@@ -284,16 +263,14 @@ class _CreateNoticeState extends State<CreateNotice> {
                                         }
                                         return AnimatedOpacity(
                                           opacity: frame == null ? 0 : 1,
-                                          duration:
-                                              const Duration(milliseconds: 500),
+                                          duration: const Duration(milliseconds: 500),
                                           child: frame == null
                                               ? Container(
                                                   color: Colors.grey[300],
                                                   height: 240.h,
                                                   width: double.infinity,
                                                   child: const Center(
-                                                    child:
-                                                        CircularProgressIndicator(
+                                                    child:CircularProgressIndicator(
                                                       color: Colors.black,
                                                     ),
                                                   ),
@@ -323,15 +300,13 @@ class _CreateNoticeState extends State<CreateNotice> {
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.all(
-                                          6), // spacing inside circle
+                                      padding:  EdgeInsets.all(6.sp), // spacing inside circle
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         shape: BoxShape.circle,
                                         boxShadow: const [
                                           BoxShadow(
-                                            color: Colors
-                                                .black12, // soft black shadow
+                                            color: Colors.black12, // soft black shadow
                                             blurRadius: 6,
                                             offset: Offset(0, 3),
                                           ),
@@ -380,13 +355,11 @@ class _CreateNoticeState extends State<CreateNotice> {
                                 }
                                 if (widget.isUpdate == true) {
                                   await noticeCon.patchNotice(widget.noticeid,
-                                      title: titleCon.text,
-                                      details: detailsCon.text,
-                                      noticeImage: selectedImage.runtimeType
-                                                  .toString() ==
-                                              "_File"
-                                          ? selectedImage
-                                          : null);
+                                    title: titleCon.text,
+                                    details: detailsCon.text,
+                                    noticeImage: selectedImage.runtimeType.toString() == "_File"
+                                    ? selectedImage
+                                    : null);
                                 } else {
                                   noticeCon.postNotice(
                                     title: titleCon.text,

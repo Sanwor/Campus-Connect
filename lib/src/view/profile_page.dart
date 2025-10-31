@@ -93,6 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 : AssetImage('assets/profile.png'),
                           ),
                           Container(
+                            height: 30.h,
                             decoration: BoxDecoration(
                               color: Color(0xff193670),
                               shape: BoxShape.circle,
@@ -107,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 color: Colors.white,
                                 size: 20.sp,
                               ),
-                              padding: EdgeInsets.all(8.sp),
+                              padding: EdgeInsets.all(0.sp),
                             ),
                           ),
                         ],

@@ -144,8 +144,7 @@ class _NoticePageState extends State<NoticePage> {
                                     title: notice.title.toString(),
                                     dateTime: notice.publishedAt.toString(),
                                     onTap: () => Get.to(() => NoticeDetails(
-                                          noticeid:
-                                              noticeCon.noticeList[index].id,
+                                        noticeid:noticeCon.noticeList[index].id,
                                         )),
                                     onTapMenu: (value) async {
                                       if (value == 'delete') {
@@ -154,13 +153,10 @@ class _NoticePageState extends State<NoticePage> {
                                           builder: (BuildContext context) {
                                             return CustomAlert(
                                               title: 'Delete',
-                                              content:
-                                                  'Do you want to delete this notice?',
+                                              content:'Do you want to delete this notice?',
                                               onTap: () async {
-                                                await noticeCon.deleteNotice(
-                                                    noticeCon
-                                                        .noticeList[index].id);
-                                                Get.back();
+                                                await noticeCon.deleteNotice(noticeCon.noticeList[index].id);
+                                                if (context.mounted) {Navigator.pop(context);}
                                                 noticeCon.getNoticeList();
                                               },
                                             );
