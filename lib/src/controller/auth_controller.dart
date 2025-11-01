@@ -22,7 +22,7 @@ class AuthController extends GetxController {
         return false;
       }
 
-      log('🔄 Attempting token refresh...');
+      log('Attempting token refresh...');
       final response = await _authService.refreshToken(refreshToken);
       
       if (response.statusCode == 200) {
@@ -31,14 +31,14 @@ class AuthController extends GetxController {
         if (response.data['refresh'] != null) {
           write("refresh_token", response.data['refresh']);
         }
-        log('✅ Token refresh successful');
+        log('Token refresh successful');
         return true;
       } else {
-        log('❌ Token refresh failed with status: ${response.statusCode}');
+        log('**Token refresh failed with status: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      log('💥 Token refresh error: $e');
+      log('**Token refresh error: $e');
       return false;
     }
   }
@@ -152,11 +152,10 @@ class AuthController extends GetxController {
       final response = await _authService.register(data);
       
       if (response.statusCode == 201 || response.statusCode == 200) {
+        Get.back();
         showToast('Registration successful!');
         
         // Add a small delay before navigation
-        await Future.delayed(Duration(milliseconds: 500));
-        Get.back();
         } else if (response.statusCode == 400) {
         String errorMessage = "Registration failed";
         if (response.data["detail"] != null) {

@@ -204,6 +204,7 @@ class DioInterceptor extends dio.Interceptor {
     return useBasicAuth;
   }
 
+  // ignore: unused_element
   Future<void> _handleTokenRefresh(dio.DioException err, dio.ErrorInterceptorHandler handler) async {
   try {
     log('**Token expired, attempting refresh...');

@@ -150,8 +150,7 @@ class _CreateEventState extends State<CreateEvent> {
               children: [
                 _buildTextField(titleController, "Event Title"),
                 _buildDatePicker(dateController, "Event Date", _selectDate),
-                _buildTimePicker(
-                    startTimeController, "Start Time", _selectTime),
+                _buildTimePicker(startTimeController, "Start Time", _selectTime),
                 _buildTimePicker(endTimeController, "End Time", _selectTime),
                 _buildTextField(detailController, "Event Detail", maxLines: 4),
                 _buildTextField(locationController, "Location"),
@@ -164,7 +163,7 @@ class _CreateEventState extends State<CreateEvent> {
                     height: 150.h,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1), // Fixed: withValues to withOpacity
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(color: Colors.white54),
                     ),

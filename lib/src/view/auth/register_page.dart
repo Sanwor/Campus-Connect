@@ -582,30 +582,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   SizedBox(height: 20.h),
               
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account? ',
-                        style: TextStyle(
-                            color: Color(0xffFFFFFF),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                              color: Color(0xff4CAF50),
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              decoration: TextDecoration.underline),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 50.h),
+                  
                 ],
               ),
             ),
