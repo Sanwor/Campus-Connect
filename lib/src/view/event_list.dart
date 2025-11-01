@@ -191,31 +191,4 @@ class _EventsPageState extends State<EventsPage> {
   void _showEventDetails(event) {
   Get.to(() => EventDetailPage(event: event));
 }
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$label: ',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: Colors.grey[300],
-                fontSize: 14.sp,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

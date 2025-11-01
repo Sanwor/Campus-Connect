@@ -27,6 +27,7 @@ class _CreateEventState extends State<CreateEvent> {
   final TextEditingController endTimeController = TextEditingController();
 
   File? selectedImage;
+  String? existingImageUrl; // Add this to store existing image URL
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _CreateEventState extends State<CreateEvent> {
         dateController.text = event.eventDate;
         startTimeController.text = event.startTime;
         endTimeController.text = event.endTime;
+        existingImageUrl = event.image;
       }
         }
   }
@@ -106,7 +108,6 @@ class _CreateEventState extends State<CreateEvent> {
     }
 
 
-    Get.back();
     eventCon.getEvents();
   }
 
@@ -163,23 +164,41 @@ class _CreateEventState extends State<CreateEvent> {
                     height: 150.h,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.1), // Fixed: withValues to withOpacity
                       borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(color: Colors.white54),
                     ),
-                    child: selectedImage == null
-                        ? Center(
-                            child: Text(
-                              "Tap to choose image",
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 14.sp),
-                            ),
-                          )
-                        : ClipRRect(
+                    child: selectedImage != null
+                        ? ClipRRect(
                             borderRadius: BorderRadius.circular(10.r),
                             child: Image.file(selectedImage!,
                                 fit: BoxFit.cover, width: double.infinity),
-                          ),
+                          )
+                        : existingImageUrl != null && existingImageUrl!.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10.r),
+                                child: Image.network(
+                                  existingImageUrl!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        "Tap to choose new image",
+                                        style: TextStyle(
+                                            color: Colors.white70, fontSize: 14.sp),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : Center(
+                                child: Text(
+                                  "Tap to choose image",
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 14.sp),
+                                ),
+                              ),
                   ),
                 ),
 

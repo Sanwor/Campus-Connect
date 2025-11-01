@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:campus_connect/src/app_utils/read_write.dart';
 import 'package:campus_connect/src/model/event_model.dart';
 import 'package:campus_connect/src/services/event_services.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:dio/dio.dart';
 
@@ -133,6 +134,7 @@ class EventController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.back();
         showToast('Event updated successfully!');
+
         getEvents(); // Refresh list
       }
     } catch (e) {
@@ -170,6 +172,7 @@ class EventController extends GetxController {
     Get.snackbar(
       'Event',
       message,
+      colorText: Colors.white,
       snackPosition: SnackPosition.TOP,
       duration: Duration(seconds: 2),
     );

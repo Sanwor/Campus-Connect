@@ -103,7 +103,8 @@ bool isUserLoggedIn() {
             builder: (context) => ChatBottomSheet(),
           );
         },
-        child: Icon(Icons.chat),
+        backgroundColor: Color(0xff020826),
+        child: Image.asset("assets/chatbot.png",height: 28.h,),
       ),
 
       body: RefreshIndicator(
