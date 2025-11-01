@@ -145,8 +145,8 @@ class _MenuPageState extends State<MenuPage> {
                               'assets/account.svg',
                             ),
                             SizedBox(width: 20.w),
-                            Text(
-                              'Account',
+                            Text(read("isAdmin") == "true" ? "Manage Users"
+                              :'Account',
                               style: TextStyle(
                                   color: Color(0xffFFFFFF),
                                   fontSize: 16.sp,
